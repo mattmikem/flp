@@ -1,0 +1,108 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\chansen1\Dropbox\JEPHighDimInf (1)\Examples\EminentDomain\CSHomePrice.txt
+  log type:  text
+ opened on:  25 Feb 2014, 15:00:02
+
+. * Import data.  Data was precleaned in MATLAB. ;
+. import excel using CSExampleData.xlsx , first ;
+
+. * IV Results using Democrat baseline instrument ;
+. ivreg CSIndex (NumProCase = Z1xD) , noconstant robust first ;
+
+First-stage regressions
+-----------------------
+
+      Source |       SS       df       MS              Number of obs =     183
+-------------+------------------------------           F(  1,   182) =    0.87
+       Model |  .067132891     1  .067132891           Prob > F      =  0.3531
+    Residual |  14.0986852   182  .077465303           R-squared     =  0.0047
+-------------+------------------------------           Adj R-squared = -0.0007
+       Total |  14.1658181   183  .077408842           Root MSE      =  .27833
+
+------------------------------------------------------------------------------
+  NumProCase |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+        Z1xD |   .0664367   .0713664     0.93   0.353    -.0743752    .2072485
+------------------------------------------------------------------------------
+
+
+Instrumental variables (2SLS) regression               Number of obs =     183
+                                                       F(  1,   182) =    0.39
+                                                       Prob > F      =  0.5338
+                                                       R-squared     =       .
+                                                       Root MSE      =  .08697
+
+------------------------------------------------------------------------------
+             |               Robust
+     CSIndex |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  NumProCase |  -.2367737    .379819    -0.62   0.534    -.9861886    .5126412
+------------------------------------------------------------------------------
+Instrumented:  NumProCase
+Instruments:   Z1xD
+------------------------------------------------------------------------------
+
+. * Need to scale standard error by sqrt((n-1)/(n-1-nControl)) to account for partialing ;
+. * out the controls to get things to line up with usual degrees of freedom ;
+. * correction done in Stata (and in MATLAB) for robust standard errors. ;
+. scalar se_Dem = .3798*sqrt(182/(182-72)) ;
+
+. scalar list se_Dem ;
+    se_Dem =  .48853346
+
+. * Instrument selection ;
+. lassoShooting NumProCase Z* , lasiter(100) verbose(0) fdisplay(0);
+
+. local zSel `r(selected)' ;
+
+. di "`zSel'" ;
+Z1xJDPSq
+
+. * IV with selected instruments ;
+. ivreg CSIndex (NumProCase = `zSel') , noconstant robust first ;
+
+First-stage regressions
+-----------------------
+
+      Source |       SS       df       MS              Number of obs =     183
+-------------+------------------------------           F(  1,   182) =   40.66
+       Model |  2.58690938     1  2.58690938           Prob > F      =  0.0000
+    Residual |  11.5789087   182  .063620377           R-squared     =  0.1826
+-------------+------------------------------           Adj R-squared =  0.1781
+       Total |  14.1658181   183  .077408842           Root MSE      =  .25223
+
+------------------------------------------------------------------------------
+  NumProCase |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+    Z1xJDPSq |   .4495297   .0704962     6.38   0.000     .3104347    .5886247
+------------------------------------------------------------------------------
+
+
+Instrumental variables (2SLS) regression               Number of obs =     183
+                                                       F(  1,   182) =    7.75
+                                                       Prob > F      =  0.0059
+                                                       R-squared     =       .
+                                                       Root MSE      =    .053
+
+------------------------------------------------------------------------------
+             |               Robust
+     CSIndex |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+  NumProCase |    .066777   .0239813     2.78   0.006       .01946    .1140941
+------------------------------------------------------------------------------
+Instrumented:  NumProCase
+Instruments:   Z1xJDPSq
+------------------------------------------------------------------------------
+
+. scalar se_Sel = .0240*sqrt(182/(182-72)) ;
+
+. scalar list se_Sel ;
+    se_Sel =  .03087099
+
+. log close ;
+      name:  <unnamed>
+       log:  C:\Users\chansen1\Dropbox\JEPHighDimInf (1)\Examples\EminentDomain\CSHomePrice.txt
+  log type:  text
+ closed on:  25 Feb 2014, 15:00:03
+----------------------------------------------------------------------------------------------------

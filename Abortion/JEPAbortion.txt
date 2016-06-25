@@ -1,0 +1,1899 @@
+----------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\chansen1\Dropbox\JEPHighDimInf (1)\Examples\Stata\Abortion\JEPAbortion.txt
+  log type:  text
+ opened on:  10 Mar 2014, 12:50:54
+
+. insheet using levitt_ex.dat ;
+(17 vars, 1734 obs)
+
+. * Drop DC, Alaska, and Hawaii ;
+. *drop if statenum == 9 | statenum == 2 | statenum == 12 ;
+. * Drop DC ;
+. drop if statenum == 9 ;
+(34 observations deleted)
+
+. * Drop years not used ;
+. drop if year < 85 | year > 97 ;
+(1050 observations deleted)
+
+. * Normalized trend variable ;
+. gen trend = (year - 85)/12 ;
+
+. tsset statenum year ;
+       panel variable:  statenum (strongly balanced)
+        time variable:  year, 85 to 97
+                delta:  1 unit
+
+. * Estimate baseline model in first-differences ;
+. xi: reg D.lpc_viol D.efaviol D.xx* i.year , cluster(statenum) ;
+i.year            _Iyear_85-97        (naturally coded; _Iyear_85 omitted)
+note: _Iyear_97 omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 20,    49) =   23.68
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2654
+                                                       Root MSE      =  .07152
+
+                              (Std. Err. adjusted for 50 clusters in statenum)
+------------------------------------------------------------------------------
+             |               Robust
+  D.lpc_viol |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     efaviol |
+         D1. |  -.1567411   .0339323    -4.62   0.000    -.2249305   -.0885516
+             |
+    xxprison |
+         D1. |  -.0371389    .057169    -0.65   0.519    -.1520242    .0777465
+             |
+    xxpolice |
+         D1. |  -.0042249   .0444837    -0.09   0.925    -.0936182    .0851684
+             |
+     xxunemp |
+         D1. |  -.4114647   .5430637    -0.76   0.452    -1.502792    .6798626
+             |
+    xxincome |
+         D1. |   .2568899   .2044154     1.26   0.215    -.1538982     .667678
+             |
+     xxpover |
+         D1. |   .0016302   .0016433     0.99   0.326    -.0016721    .0049324
+             |
+    xxafdc15 |
+         D1. |   2.89e-06   5.77e-06     0.50   0.619    -8.71e-06    .0000145
+             |
+    xxgunlaw |
+         D1. |  -.0169179    .013582    -1.25   0.219    -.0442119    .0103761
+             |
+      xxbeer |
+         D1. |  -.0000668   .0014536    -0.05   0.964    -.0029879    .0028543
+             |
+   _Iyear_86 |   .0472137   .0171687     2.75   0.008     .0127118    .0817155
+   _Iyear_87 |  -.0285852    .013235    -2.16   0.036     -.055182   -.0019884
+   _Iyear_88 |   .0338853   .0129788     2.61   0.012     .0078034    .0599671
+   _Iyear_89 |   .0359722   .0131018     2.75   0.008     .0096432    .0623012
+   _Iyear_90 |   .1000896   .0151096     6.62   0.000     .0697257    .1304535
+   _Iyear_91 |   .0568415   .0141884     4.01   0.000     .0283289    .0853542
+   _Iyear_92 |   .0269322   .0175123     1.54   0.131      -.00826    .0621244
+   _Iyear_93 |   .0199233   .0122886     1.62   0.111    -.0047715    .0446181
+   _Iyear_94 |    -.00631   .0118121    -0.53   0.596    -.0300473    .0174274
+   _Iyear_95 |   -.001449   .0162295    -0.09   0.929    -.0340635    .0311655
+   _Iyear_96 |  -.0462282   .0138405    -3.34   0.002    -.0740417   -.0184147
+   _Iyear_97 |          0  (omitted)
+       _cons |   .0080173   .0108096     0.74   0.462    -.0137054      .02974
+------------------------------------------------------------------------------
+
+. xi: reg D.lpc_prop D.efaprop D.xx* i.year , cluster(statenum) ;
+i.year            _Iyear_85-97        (naturally coded; _Iyear_85 omitted)
+note: _Iyear_97 omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 20,    49) =   38.82
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2269
+                                                       Root MSE      =  .04723
+
+                              (Std. Err. adjusted for 50 clusters in statenum)
+------------------------------------------------------------------------------
+             |               Robust
+  D.lpc_prop |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     efaprop |
+         D1. |  -.1056067   .0211387    -5.00   0.000    -.1480866   -.0631268
+             |
+    xxprison |
+         D1. |  -.0442129   .0399126    -1.11   0.273    -.1244203    .0359945
+             |
+    xxpolice |
+         D1. |   .0013468   .0289865     0.05   0.963    -.0569037    .0595974
+             |
+     xxunemp |
+         D1. |   .8088413    .286039     2.83   0.007     .2340244    1.383658
+             |
+    xxincome |
+         D1. |  -.0319107   .1487698    -0.21   0.831    -.3308748    .2670535
+             |
+     xxpover |
+         D1. |   .0005799   .0009897     0.59   0.561    -.0014091    .0025688
+             |
+    xxafdc15 |
+         D1. |   1.09e-07   2.68e-06     0.04   0.968    -5.27e-06    5.49e-06
+             |
+    xxgunlaw |
+         D1. |   .0079872   .0165145     0.48   0.631    -.0251999    .0411743
+             |
+      xxbeer |
+         D1. |   -.000094    .001634    -0.06   0.954    -.0033778    .0031897
+             |
+   _Iyear_86 |   .0493091   .0105104     4.69   0.000     .0281876    .0704306
+   _Iyear_87 |   .0367647   .0092482     3.98   0.000     .0181796    .0553497
+   _Iyear_88 |   .0203096   .0099623     2.04   0.047     .0002896    .0403296
+   _Iyear_89 |   .0318672    .009623     3.31   0.002     .0125291    .0512053
+   _Iyear_90 |   .0331433   .0087018     3.81   0.000     .0156563    .0506303
+   _Iyear_91 |   .0292757   .0080645     3.63   0.001     .0130696    .0454819
+   _Iyear_92 |  -.0180399   .0126121    -1.43   0.159    -.0433848    .0073049
+   _Iyear_93 |  -.0012664   .0094742    -0.13   0.894    -.0203056    .0177728
+   _Iyear_94 |   .0277149   .0093639     2.96   0.005     .0088974    .0465324
+   _Iyear_95 |   .0394526   .0115456     3.42   0.001      .016251    .0626543
+   _Iyear_96 |  -.0121907   .0100496    -1.21   0.231    -.0323862    .0080047
+   _Iyear_97 |          0  (omitted)
+       _cons |  -.0006986   .0076638    -0.09   0.928    -.0160995    .0147023
+------------------------------------------------------------------------------
+
+. xi: reg D.lpc_murd D.efamurd D.xx* i.year , cluster(statenum) ;
+i.year            _Iyear_85-97        (naturally coded; _Iyear_85 omitted)
+note: _Iyear_97 omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 20,    49) =   12.12
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0728
+                                                       Root MSE      =  .25726
+
+                              (Std. Err. adjusted for 50 clusters in statenum)
+------------------------------------------------------------------------------
+             |               Robust
+  D.lpc_murd |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+     efamurd |
+         D1. |  -.2179677   .0677003    -3.22   0.002    -.3540165    -.081919
+             |
+    xxprison |
+         D1. |   -.077292   .2199209    -0.35   0.727    -.5192396    .3646557
+             |
+    xxpolice |
+         D1. |   .2643187   .2179024     1.21   0.231    -.1735725      .70221
+             |
+     xxunemp |
+         D1. |  -1.710646   1.340697    -1.28   0.208    -4.404878    .9835851
+             |
+    xxincome |
+         D1. |   -1.91615   .9739057    -1.97   0.055    -3.873287    .0409867
+             |
+     xxpover |
+         D1. |  -.0019964   .0058539    -0.34   0.735    -.0137602    .0097675
+             |
+    xxafdc15 |
+         D1. |  -.0000313   .0000152    -2.06   0.045    -.0000617   -7.67e-07
+             |
+    xxgunlaw |
+         D1. |   .0111875   .0569375     0.20   0.845    -.1032328    .1256078
+             |
+      xxbeer |
+         D1. |   .0017476   .0048788     0.36   0.722    -.0080569     .011552
+             |
+   _Iyear_86 |   .1821951   .0666184     2.73   0.009     .0483203    .3160698
+   _Iyear_87 |   .0351502    .050687     0.69   0.491    -.0667092    .1370095
+   _Iyear_88 |   .0721048   .0531556     1.36   0.181    -.0347154    .1789251
+   _Iyear_89 |   .0951573   .0378657     2.51   0.015     .0190634    .1712512
+   _Iyear_90 |   .1191989   .0472964     2.52   0.015     .0241532    .2142446
+   _Iyear_91 |   .1058216   .0577676     1.83   0.073    -.0102667      .22191
+   _Iyear_92 |   .0936027   .0673664     1.39   0.171    -.0417752    .2289805
+   _Iyear_93 |   .1668759    .054281     3.07   0.003     .0577942    .2759575
+   _Iyear_94 |    .002041   .0477668     0.04   0.966    -.0939499     .098032
+   _Iyear_95 |   .1671159   .0940864     1.78   0.082    -.0219578    .3561896
+   _Iyear_96 |     .05687   .0734639     0.77   0.443    -.0907613    .2045013
+   _Iyear_97 |          0  (omitted)
+       _cons |  -.0620118   .0402821    -1.54   0.130    -.1429617    .0189381
+------------------------------------------------------------------------------
+
+. * Generate variables for LASSO ;
+. replace xxincome = xxincome/100 ;
+(650 real changes made)
+
+. replace xxpover = xxpover/100 ;
+(650 real changes made)
+
+. replace xxafdc15 = xxafdc15/10000 ;
+(650 real changes made)
+
+. replace xxbeer = xxbeer/100 ;
+(650 real changes made)
+
+. local tdums = "_Iyear_87 _Iyear_88 _Iyear_89 _Iyear_90 _Iyear_91 _Iyear_92 _Iyear_93 _Iyear_94 _Iy
+> ear_95 _Iyear_96 _Iyear_97" ;
+
+. local xx = "xxprison xxpolice xxunemp xxincome xxpover xxafdc15 xxgunlaw xxbeer" ;
+
+. * Differences ;
+. local Dxx ;
+
+. foreach x of local xx { ;
+  2.         gen D`x' = D.`x' ;
+  3.         local tempname = "D`x'" ;
+  4.         local Dxx : list Dxx | tempname ;
+  5. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+. * Squared Differences
+> local Dxx2 ;
+. foreach x of local Dxx { ;
+  2.         gen `x'2 = `x'^2 ;
+  3.         local tempname = "`x'2" ;
+  4.         local Dxx2 : list Dxx2 | tempname ;
+  5. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+. * Difference Interactions
+> local DxxInt ;
+. local nxx : word count `Dxx' ;
+
+. forvalues ii = 1/`nxx' { ;
+  2.         local start = `ii'+1 ;
+  3.         forvalues jj = `start'/`nxx' { ;
+  4.                 local temp1 : word `ii' of `Dxx' ;
+  5.                 local temp2 : word `jj' of `Dxx' ;
+  6.                 gen `temp1'X`temp2' = `temp1'*`temp2' ;
+  7.                 local tempname = "`temp1'X`temp2'" ;
+  8.                 local DxxInt : list DxxInt | tempname ;
+  9.         } ;
+ 10. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+.                 * Lags ;
+. local Lxx ;
+
+. foreach x of local xx { ;
+  2.         gen L`x' = L.`x' ;
+  3.         local tempname = "L`x'" ;
+  4.         local Lxx : list Lxx | tempname ;
+  5. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+. * Squared Lags
+> local Lxx2 ;
+. foreach x of local Lxx { ;
+  2.         gen `x'2 = `x'^2 ;
+  3.         local tempname = "`x'2" ;
+  4.         local Lxx2 : list Lxx2 | tempname ;
+  5. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+. * Means ;
+. local Mxx ;
+
+. foreach x of local xx { ;
+  2.         by statenum: egen M`x' = mean(`x') ;
+  3.         local tempname = "M`x'" ;
+  4.         local Mxx : list Mxx | tempname ;
+  5. } ;
+
+. * Squared Means ;
+. local Mxx2 ;
+
+. foreach x of local Mxx { ;
+  2.         gen `x'2 = `x'^2 ;
+  3.         local tempname = "`x'2" ;
+  4.         local Mxx2 : list Mxx2 | tempname ;
+  5. } ;
+
+. * Initial Levels ;
+. local xx0 ;
+
+. foreach x of local xx { ;
+  2.         by statenum: gen `x'0 = `x'[1] ;
+  3.         local tempname = "`x'0" ;
+  4.         local xx0 : list xx0 | tempname ;
+  5. } ;
+
+. * Squared Initial Levels ;
+. local xx02 ;
+
+. foreach x of local xx0 { ;
+  2.         gen `x'2 = `x'^2 ;
+  3.         local tempname = "`x'2" ;
+  4.         local xx02 : list xx02 | tempname ;
+  5. } ;
+
+. * Initial Differences ;
+. local Dxx0 ;
+
+. foreach x of local Dxx { ;
+  2.         by statenum: gen `x'0 = `x'[2] ;
+  3.         local tempname = "`x'0" ;
+  4.         local xx0 : list xx0 | tempname ;
+  5. } ;
+
+. * Squared Initial Differences ;
+. local Dxx02 ;
+
+. foreach x of local Dxx0 { ;
+  2.         gen `x'2 = `x'^2 ;
+  3.         local tempname = "`x'2" ;
+  4.         local Dxx02 : list Dxx02 | tempname ;
+  5. } ;
+
+. * Interactions with trends ;
+. local biglist : list Dxx | Dxx2 ;
+
+. local biglist : list biglist | DxxInt ;
+
+. local biglist : list biglist | Lxx ;
+
+. local biglist : list biglist | Lxx2 ;
+
+. local biglist : list biglist | Mxx ;
+
+. local biglist : list biglist | Mxx2 ;
+
+. local biglist : list biglist | xx0 ;
+
+. local biglist : list biglist | xx02 ;
+
+. local biglist : list biglist | Dxx0 ;
+
+. local biglist : list biglist | Dxx02 ;
+
+. local IntT ;
+
+. local nxx : word count `biglist' ;
+
+. foreach x of local biglist { ;
+  2.         gen `x'Xt = `x'*trend ;
+  3.         gen `x'Xt2 = `x'*(trend^2) ;
+  4.         local tempname = "`x'Xt `x'Xt2" ;
+  5.         local IntT : list IntT | tempname ;
+  6. } ;
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+(50 missing values generated)
+
+.         local shared : list biglist | IntT ;
+
+. * Violence specific controls ;
+. gen Dviol = D.efaviol ;
+(50 missing values generated)
+
+. by statenum: gen viol0 = efaviol[1] ;
+
+. by statenum: gen Dviol0 = Dviol[2] ;
+
+. gen viol02 = viol0^2 ;
+
+. gen Dviol02 = Dviol0^2 ;
+
+. gen viol0Xt = viol0*trend ;
+
+. gen viol0Xt2 = viol0*(trend^2) ;
+
+. gen viol02Xt = viol02*trend ;
+
+. gen viol02Xt2 = viol02*(trend^2) ;
+
+. gen Dviol0Xt = Dviol0*trend ;
+
+. gen Dviol0Xt2 = Dviol0*(trend^2) ;
+
+. gen Dviol02Xt = Dviol02*trend ;
+
+. gen Dviol02Xt2 = Dviol02*(trend^2) ;
+
+. local contviol = "viol0 viol0Xt viol0Xt2 viol02 viol02Xt viol02Xt2 
+>                         Dviol0 Dviol0Xt Dviol0Xt2 Dviol02 Dviol02Xt Dviol02Xt2" ;
+
+. local AllViol : list contviol | shared ;
+
+.                         * Property specifc controls ;
+. gen Dprop = D.efaprop ;
+(50 missing values generated)
+
+. by statenum: gen prop0 = efaprop[1] ;
+
+. by statenum: gen Dprop0 = Dprop[2] ;
+
+. gen prop02 = prop0^2 ;
+
+. gen Dprop02 = Dprop0^2 ;
+
+. gen prop0Xt = prop0*trend ;
+
+. gen prop0Xt2 = prop0*(trend^2) ;
+
+. gen prop02Xt = prop02*trend ;
+
+. gen prop02Xt2 = prop02*(trend^2) ;
+
+. gen Dprop0Xt = Dprop0*trend ;
+
+. gen Dprop0Xt2 = Dprop0*(trend^2) ;
+
+. gen Dprop02Xt = Dprop02*trend ;
+
+. gen Dprop02Xt2 = Dprop02*(trend^2) ;
+
+. local contprop = "prop0 prop0Xt prop0Xt2 prop02 prop02Xt prop02Xt2 
+>                         Dprop0 Dprop0Xt Dprop0Xt2 Dprop02 Dprop02Xt Dprop02Xt2" ;
+
+.                         local AllProp : list contprop | shared ;
+
+. * Murder specific controls ;
+. gen Dmurd = D.efamurd ;
+(50 missing values generated)
+
+. by statenum: gen murd0 = efamurd[1] ;
+
+. by statenum: gen Dmurd0 = Dmurd[2] ;
+
+. gen murd02 = murd0^2 ;
+
+. gen Dmurd02 = Dmurd0^2 ;
+
+. gen murd0Xt = murd0*trend ;
+
+. gen murd0Xt2 = murd0*(trend^2) ;
+
+. gen murd02Xt = murd02*trend ;
+
+. gen murd02Xt2 = murd02*(trend^2) ;
+
+. gen Dmurd0Xt = Dmurd0*trend ;
+
+. gen Dmurd0Xt2 = Dmurd0*(trend^2) ;
+
+. gen Dmurd02Xt = Dmurd02*trend ;
+
+. gen Dmurd02Xt2 = Dmurd02*(trend^2) ;
+
+. local contmurd = "murd0 murd0Xt murd0Xt2 murd02 murd02Xt murd02Xt2 
+>                         Dmurd0 Dmurd0Xt Dmurd0Xt2 Dmurd02 Dmurd02Xt Dmurd02Xt2" ;
+
+.                         local AllMurd : list contmurd | shared ;
+
+. * Differenced outcomes ;
+. gen Dyviol = D.lpc_viol ;
+(50 missing values generated)
+
+. gen Dyprop = D.lpc_prop ;
+(50 missing values generated)
+
+. gen Dymurd = D.lpc_murd ;
+(50 missing values generated)
+
+.                                                 drop if trend == 0 ;
+(50 observations deleted)
+
+. * Regression using everything ;
+. reg Dyviol Dviol `AllViol' `tdums' , cluster(statenum) ;
+note: Dxxgunlaw2 omitted because of collinearity
+note: Lxxgunlaw2 omitted because of collinearity
+note: Dxxgunlaw0 omitted because of collinearity
+note: xxgunlaw02 omitted because of collinearity
+note: Dxxgunlaw2Xt omitted because of collinearity
+note: Dxxgunlaw2Xt2 omitted because of collinearity
+note: DxxincomeXDxxgunlawXt omitted because of collinearity
+note: DxxincomeXDxxgunlawXt2 omitted because of collinearity
+note: LxxgunlawXt omitted because of collinearity
+note: Lxxincome2Xt omitted because of collinearity
+note: Lxxgunlaw2Xt2 omitted because of collinearity
+note: Mxxincome2Xt omitted because of collinearity
+note: Mxxincome2Xt2 omitted because of collinearity
+note: xxgunlaw0Xt omitted because of collinearity
+note: xxgunlaw0Xt2 omitted because of collinearity
+note: Dxxgunlaw0Xt omitted because of collinearity
+note: Dxxgunlaw0Xt2 omitted because of collinearity
+note: xxincome02Xt omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 50,    49) =       .
+                                                       Prob > F      =       .
+                                                       R-squared     =  0.6851
+                                                       Root MSE      =  .06583
+
+                                        (Std. Err. adjusted for 50 clusters in statenum)
+----------------------------------------------------------------------------------------
+                       |               Robust
+                Dyviol |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------------+----------------------------------------------------------------
+                 Dviol |   .0706658   .2837889     0.25   0.804    -.4996293    .6409609
+                 viol0 |   16.20971   13.80423     1.17   0.246    -11.53092    43.95034
+               viol0Xt |  -91.27197   73.98254    -1.23   0.223    -239.9455    57.40151
+              viol0Xt2 |   74.48084   72.73453     1.02   0.311    -71.68467    220.6464
+                viol02 |   -303.786   248.5081    -1.22   0.227    -803.1819    195.6098
+              viol02Xt |   1635.887   1306.991     1.25   0.217    -990.6102    4262.383
+             viol02Xt2 |  -1403.011   1289.098    -1.09   0.282    -3993.549    1187.528
+                Dviol0 |  -14.69698   17.06416    -0.86   0.393    -48.98869    19.59474
+              Dviol0Xt |   85.36097   88.94655     0.96   0.342    -93.38381    264.1058
+             Dviol0Xt2 |  -67.03124   87.73912    -0.76   0.449    -243.3496    109.2871
+               Dviol02 |   574.0107   477.1685     1.20   0.235    -384.8953    1532.917
+             Dviol02Xt |  -3081.437   2499.833    -1.23   0.224    -8105.039    1942.166
+            Dviol02Xt2 |   2635.145   2472.548     1.07   0.292    -2333.625    7603.916
+             Dxxprison |  -1.133798   .7314147    -1.55   0.128     -2.60363    .3360353
+             Dxxpolice |   .8765653    1.08734     0.81   0.424    -1.308527    3.061658
+              Dxxunemp |  -1.595246    6.78457    -0.24   0.815    -15.22935    12.03886
+             Dxxincome |   162.1199   229.6864     0.71   0.484    -299.4522     623.692
+              Dxxpover |   1.990323   2.572125     0.77   0.443    -3.178556    7.159201
+             Dxxafdc15 |  -.9030677   .8182905    -1.10   0.275    -2.547484    .7413487
+             Dxxgunlaw |   2.439847   1.666202     1.46   0.149    -.9085106    5.788205
+               Dxxbeer |   2.842638   7.011978     0.41   0.687    -11.24846    16.93373
+            Dxxprison2 |   2.986655   2.856964     1.05   0.301    -2.754629    8.727939
+            Dxxpolice2 |   20.29148   11.22787     1.81   0.077    -2.271782    42.85473
+             Dxxunemp2 |  -136.7923   329.0601    -0.42   0.679    -798.0633    524.4787
+            Dxxincome2 |  -882129.4   406327.6    -2.17   0.035     -1698675   -65583.61
+             Dxxpover2 |   -20.5839   39.88522    -0.52   0.608    -100.7362    59.56844
+            Dxxafdc152 |  -4.125906   3.020625    -1.37   0.178    -10.19608    1.944268
+            Dxxgunlaw2 |          0  (omitted)
+              Dxxbeer2 |   492.0359   332.8159     1.48   0.146    -176.7827    1160.854
+   DxxprisonXDxxpolice |    3.47588   10.95349     0.32   0.752    -18.53598    25.48774
+    DxxprisonXDxxunemp |  -23.41129   57.54397    -0.41   0.686    -139.0502    92.22765
+   DxxprisonXDxxincome |  -237.0533   1860.391    -0.13   0.899     -3975.65    3501.543
+    DxxprisonXDxxpover |  -7.616955   22.01383    -0.35   0.731    -51.85541     36.6215
+   DxxprisonXDxxafdc15 |   2.200094   8.639028     0.25   0.800    -15.16068    19.56087
+   DxxprisonXDxxgunlaw |  -19.37364   11.17865    -1.73   0.089    -41.83798    3.090705
+     DxxprisonXDxxbeer |   68.76287   70.09974     0.98   0.331    -72.10783    209.6336
+    DxxpoliceXDxxunemp |   132.2898   114.4013     1.16   0.253     -97.6081    362.1877
+   DxxpoliceXDxxincome |    749.873   3008.596     0.25   0.804    -5296.127    6795.873
+    DxxpoliceXDxxpover |   57.17793   42.40433     1.35   0.184    -28.03675    142.3926
+   DxxpoliceXDxxafdc15 |   12.29512   12.20192     1.01   0.319    -12.22556     36.8158
+   DxxpoliceXDxxgunlaw |   167.5166   76.32592     2.19   0.033     14.13391    320.8993
+     DxxpoliceXDxxbeer |  -.9015634   162.4088    -0.01   0.996    -327.2743    325.4711
+    DxxunempXDxxincome |  -23151.11   19779.46    -1.17   0.247    -62899.42    16597.19
+     DxxunempXDxxpover |   180.1762   164.0368     1.10   0.277    -149.4681    509.8204
+    DxxunempXDxxafdc15 |   20.97499   60.51558     0.35   0.730    -100.6356    142.5856
+    DxxunempXDxxgunlaw |  -2016.741   1042.331    -1.93   0.059    -4111.384     77.9014
+      DxxunempXDxxbeer |   579.9426   574.0602     1.01   0.317    -573.6747     1733.56
+    DxxincomeXDxxpover |   1139.922    6179.57     0.18   0.854    -11278.39    13558.23
+   DxxincomeXDxxafdc15 |   1097.512    2617.08     0.42   0.677    -4161.707    6356.731
+   DxxincomeXDxxgunlaw |   5643.362   2594.906     2.17   0.035     428.7024    10858.02
+     DxxincomeXDxxbeer |  -1337.012   14297.21    -0.09   0.926    -30068.34    27394.32
+    DxxpoverXDxxafdc15 |  -7.760011   21.26223    -0.36   0.717    -50.48805    34.96803
+    DxxpoverXDxxgunlaw |   -989.114   480.6319    -2.06   0.045     -1954.98   -23.24809
+      DxxpoverXDxxbeer |  -34.55241   217.2257    -0.16   0.874    -471.0839    401.9791
+   Dxxafdc15XDxxgunlaw |  -427.0507   245.1048    -1.74   0.088    -919.6072     65.5058
+     Dxxafdc15XDxxbeer |   100.3326   58.58303     1.71   0.093     -17.3944    218.0596
+     DxxgunlawXDxxbeer |   2080.444   1069.038     1.95   0.057    -67.86848    4228.756
+             Lxxprison |    .369838   .3287494     1.12   0.266    -.2908086    1.030485
+             Lxxpolice |   .1189644   4.061203     0.03   0.977    -8.042328    8.280257
+              Lxxunemp |  -14.56259   10.52677    -1.38   0.173    -35.71692    6.591742
+             Lxxincome |  -3560.831   2430.732    -1.46   0.149     -8445.57    1323.909
+              Lxxpover |   5.955479   5.995685     0.99   0.325      -6.0933    18.00426
+             Lxxafdc15 |  -1.164438   1.228393    -0.95   0.348    -3.632987     1.30411
+             Lxxgunlaw |   .0385735   .1184841     0.33   0.746    -.1995292    .2766762
+               Lxxbeer |  -16.73714   21.22163    -0.79   0.434     -59.3836    25.90932
+            Lxxprison2 |   .1575841   .2120832     0.74   0.461     -.268613    .5837812
+            Lxxpolice2 |    .143732   1.871396     0.08   0.939    -3.616979    3.904443
+             Lxxunemp2 |   73.79951   63.12748     1.17   0.248    -53.05991    200.6589
+            Lxxincome2 |   18761.28   12304.46     1.52   0.134    -5965.451    43488.01
+             Lxxpover2 |  -22.39456   18.60724    -1.20   0.235    -59.78721    14.99809
+            Lxxafdc152 |   .2946838   .6206397     0.47   0.637    -.9525383    1.541906
+            Lxxgunlaw2 |          0  (omitted)
+              Lxxbeer2 |   35.56143   37.50899     0.95   0.348    -39.81571    110.9386
+             Mxxprison |  -1.648604    .566027    -2.91   0.005    -2.786078   -.5111302
+             Mxxpolice |   1.834203   3.299399     0.56   0.581    -4.796188    8.464594
+              Mxxunemp |   39.84089   27.57016     1.45   0.155    -15.56341    95.24519
+             Mxxincome |   1767.154   2210.823     0.80   0.428    -2675.661     6209.97
+              Mxxpover |   14.59898   8.470135     1.72   0.091    -2.422393    31.62035
+             Mxxafdc15 |   1.211111   1.886558     0.64   0.524     -2.58007    5.002293
+             Mxxgunlaw |   .4156235   .4480453     0.93   0.358    -.4847572    1.316004
+               Mxxbeer |  -6.683096   17.02541    -0.39   0.696    -40.89694    27.53075
+            Mxxprison2 |   .8368472    .322211     2.60   0.012     .1893399    1.484355
+            Mxxpolice2 |  -.2955241   1.631852    -0.18   0.857    -3.574854    2.983806
+             Mxxunemp2 |  -552.8205   268.5179    -2.06   0.045    -1092.428   -13.21355
+            Mxxincome2 |  -8424.472   10805.61    -0.78   0.439    -30139.16    13290.21
+             Mxxpover2 |  -42.53377   23.41055    -1.82   0.075    -89.57902    4.511482
+            Mxxafdc152 |  -.7863775   1.179977    -0.67   0.508     -3.15763    1.584875
+            Mxxgunlaw2 |  -.6206649   .5997608    -1.03   0.306    -1.825929    .5845996
+              Mxxbeer2 |  -6.011328   30.09781    -0.20   0.843    -66.49514    54.47248
+             xxprison0 |   .5012988   .5064247     0.99   0.327    -.5163997    1.518997
+             xxpolice0 |   2.205123   5.415655     0.41   0.686    -8.678042    13.08829
+              xxunemp0 |  -14.59857   18.60182    -0.78   0.436    -51.98032    22.78318
+             xxincome0 |   985.5584   1946.068     0.51   0.615    -2925.211    4896.328
+              xxpover0 |  -21.84833   8.952618    -2.44   0.018    -39.83929   -3.857367
+             xxafdc150 |  -2.355262   1.647866    -1.43   0.159    -5.666772    .9562478
+             xxgunlaw0 |   .2409069     .22165     1.09   0.282    -.2045154    .6863291
+               xxbeer0 |   23.96936   19.89801     1.20   0.234    -16.01718    63.95591
+            Dxxprison0 |   .5994149   .5660918     1.06   0.295    -.5381892    1.737019
+            Dxxpolice0 |  -2.267242   1.735002    -1.31   0.197    -5.753858    1.219375
+             Dxxunemp0 |    1.10796    6.75248     0.16   0.870    -12.46166    14.67758
+            Dxxincome0 |   -590.249   403.3423    -1.46   0.150    -1400.796    220.2977
+             Dxxpover0 |  -3.777241   2.410002    -1.57   0.123    -8.620321     1.06584
+            Dxxafdc150 |  -.4111186   .7554711    -0.54   0.589    -1.929295    1.107057
+            Dxxgunlaw0 |          0  (omitted)
+              Dxxbeer0 |   3.376996   8.475527     0.40   0.692    -13.65521     20.4092
+            xxprison02 |   -1.03184   .3382208    -3.05   0.004     -1.71152   -.3521601
+            xxpolice02 |  -1.838249   2.644889    -0.70   0.490    -7.153352    3.476855
+             xxunemp02 |   203.9567   115.8275     1.76   0.085    -28.80741    436.7209
+            xxincome02 |  -6339.714    9720.29    -0.65   0.517    -25873.37    13193.94
+             xxpover02 |    62.8603   26.95462     2.33   0.024     8.692955    117.0276
+            xxafdc1502 |   1.626395   .8772672     1.85   0.070    -.1365395    3.389329
+            xxgunlaw02 |          0  (omitted)
+              xxbeer02 |  -31.87378   31.78129    -1.00   0.321    -95.74067    31.99311
+           DxxprisonXt |   2.336251   2.706567     0.86   0.392    -3.102799    7.775301
+          DxxprisonXt2 |  -1.338171   2.377257    -0.56   0.576    -6.115449    3.439107
+           DxxpoliceXt |  -2.610065   3.354377    -0.78   0.440    -9.350939    4.130808
+          DxxpoliceXt2 |   2.318412   2.617464     0.89   0.380    -2.941579    7.578402
+            DxxunempXt |  -.6129421   26.54921    -0.02   0.982    -53.96557    52.73968
+           DxxunempXt2 |    2.95896   23.18187     0.13   0.899    -43.62675    49.54467
+           DxxincomeXt |  -427.4144   1087.648    -0.39   0.696    -2613.124    1758.295
+          DxxincomeXt2 |   281.9643   977.3368     0.29   0.774    -1682.068    2245.996
+            DxxpoverXt |  -7.116965   8.606596    -0.83   0.412    -24.41257    10.17864
+           DxxpoverXt2 |   5.492708   7.217411     0.76   0.450    -9.011222    19.99664
+           Dxxafdc15Xt |   1.381006   3.212799     0.43   0.669    -5.075355    7.837368
+          Dxxafdc15Xt2 |  -.5130952   2.759898    -0.19   0.853    -6.059318    5.033127
+           DxxgunlawXt |  -44.72174    24.5293    -1.82   0.074    -94.01521    4.571732
+          DxxgunlawXt2 |   47.76655   26.00562     1.84   0.072    -4.493705    100.0268
+             DxxbeerXt |  -1.500684   24.81801    -0.06   0.952    -51.37435    48.37298
+            DxxbeerXt2 |  -5.975695   21.27984    -0.28   0.780    -48.73913    36.78774
+          Dxxprison2Xt |  -1.715191   12.00069    -0.14   0.887    -25.83149    22.40111
+         Dxxprison2Xt2 |  -1.502119   10.68832    -0.14   0.889     -22.9811    19.97686
+          Dxxpolice2Xt |  -49.90165   30.59625    -1.63   0.109    -111.3871    11.58382
+         Dxxpolice2Xt2 |   28.41906   21.45119     1.32   0.191    -14.68873    71.52684
+           Dxxunemp2Xt |   685.1674   1276.031     0.54   0.594    -1879.113    3249.448
+          Dxxunemp2Xt2 |  -358.9026   1186.298    -0.30   0.764    -2742.859    2025.054
+          Dxxincome2Xt |    4640996    2006617     2.31   0.025     608548.7     8673444
+         Dxxincome2Xt2 |   -4475099    1946818    -2.30   0.026     -8387375   -562822.2
+           Dxxpover2Xt |   66.48715   155.1151     0.43   0.670    -245.2283    378.2026
+          Dxxpover2Xt2 |  -50.32534   134.6789    -0.37   0.710    -320.9727     220.322
+          Dxxafdc152Xt |   25.56725   15.17749     1.68   0.098    -4.933052    56.06755
+         Dxxafdc152Xt2 |  -28.69144   15.24247    -1.88   0.066    -59.32233     1.93944
+          Dxxgunlaw2Xt |          0  (omitted)
+         Dxxgunlaw2Xt2 |          0  (omitted)
+            Dxxbeer2Xt |  -1156.957   851.9019    -1.36   0.181    -2868.918    555.0038
+           Dxxbeer2Xt2 |   662.1001     554.76     1.19   0.238    -452.7319    1776.932
+ DxxprisonXDxxpoliceXt |  -10.65333   36.17966    -0.29   0.770    -83.35908    62.05241
+DxxprisonXDxxpoliceXt2 |    3.69245   29.52041     0.13   0.901    -55.63103    63.01593
+  DxxprisonXDxxunempXt |   90.01727   261.7422     0.34   0.732    -435.9734     616.008
+ DxxprisonXDxxunempXt2 |  -138.8825   256.7297    -0.54   0.591    -654.8002    377.0352
+ DxxprisonXDxxincomeXt |   1856.718   8442.279     0.22   0.827    -15108.68    18822.11
+DxxprisonXDxxincomeXt2 |  -1343.326   7873.693    -0.17   0.865     -17166.1    14479.45
+  DxxprisonXDxxpoverXt |   18.48699   96.84236     0.19   0.849     -176.125     213.099
+ DxxprisonXDxxpoverXt2 |   7.186884    88.3885     0.08   0.936    -170.4364    184.8102
+ DxxprisonXDxxafdc15Xt |    5.44632   41.08395     0.13   0.895    -77.11497    88.00761
+DxxprisonXDxxafdc15Xt2 |   -10.1984   36.86458    -0.28   0.783    -84.28054    63.88374
+ DxxprisonXDxxgunlawXt |   520.8744   273.5856     1.90   0.063    -28.91643    1070.665
+DxxprisonXDxxgunlawXt2 |  -602.7075   316.7998    -1.90   0.063    -1239.341    33.92551
+   DxxprisonXDxxbeerXt |  -378.3324   302.1859    -1.25   0.217    -985.5976    228.9328
+  DxxprisonXDxxbeerXt2 |   395.5035   289.0663     1.37   0.177    -185.3969     976.404
+  DxxpoliceXDxxunempXt |  -505.3918   363.6269    -1.39   0.171    -1236.127    225.3439
+ DxxpoliceXDxxunempXt2 |   464.8214   279.6045     1.66   0.103    -97.06493    1026.708
+ DxxpoliceXDxxincomeXt |  -8180.393   12567.78    -0.65   0.518    -33436.29     17075.5
+DxxpoliceXDxxincomeXt2 |   9322.053   11056.81     0.84   0.403    -12897.43    31541.54
+  DxxpoliceXDxxpoverXt |  -140.7058   127.9076    -1.10   0.277    -397.7456    116.3341
+ DxxpoliceXDxxpoverXt2 |   84.98958   92.76231     0.92   0.364    -101.4233    271.4024
+ DxxpoliceXDxxafdc15Xt |  -47.77676   41.22075    -1.16   0.252     -130.613    35.05943
+DxxpoliceXDxxafdc15Xt2 |   43.67719   32.89167     1.33   0.190     -22.4211    109.7755
+ DxxpoliceXDxxgunlawXt |  -796.5659   371.4244    -2.14   0.037    -1542.971    -50.1607
+DxxpoliceXDxxgunlawXt2 |   713.4954   335.9093     2.12   0.039     38.46039     1388.53
+   DxxpoliceXDxxbeerXt |   25.08327   528.3465     0.05   0.962    -1036.669    1086.835
+  DxxpoliceXDxxbeerXt2 |  -55.82788   418.3144    -0.13   0.894    -896.4622    784.8065
+  DxxunempXDxxincomeXt |   131566.8   92507.63     1.42   0.161    -54334.28    317467.8
+ DxxunempXDxxincomeXt2 |  -120581.2    88962.1    -1.36   0.181    -299357.2    58194.88
+   DxxunempXDxxpoverXt |  -409.6536   649.1371    -0.63   0.531    -1714.144    894.8363
+  DxxunempXDxxpoverXt2 |   265.9919   622.8372     0.43   0.671    -985.6463     1517.63
+  DxxunempXDxxafdc15Xt |   20.21058   253.2181     0.08   0.937    -488.6501    529.0713
+ DxxunempXDxxafdc15Xt2 |  -37.77631   231.8012    -0.16   0.871    -503.5982    428.0456
+  DxxunempXDxxgunlawXt |   7237.945   3738.771     1.94   0.059    -275.3963    14751.29
+ DxxunempXDxxgunlawXt2 |  -5925.829   3049.563    -1.94   0.058    -12054.16    202.4981
+    DxxunempXDxxbeerXt |   -1722.29   2373.771    -0.73   0.472    -6492.561    3047.982
+   DxxunempXDxxbeerXt2 |   1065.851   2277.045     0.47   0.642    -3510.043    5641.745
+  DxxincomeXDxxpoverXt |  -18996.14   28517.37    -0.67   0.508    -76303.95    38311.67
+ DxxincomeXDxxpoverXt2 |   19798.42   26173.86     0.76   0.453    -32799.92    72396.76
+ DxxincomeXDxxafdc15Xt |  -853.0775   11973.37    -0.07   0.943    -24914.47    23208.31
+DxxincomeXDxxafdc15Xt2 |  -1352.443   11406.71    -0.12   0.906    -24275.08     21570.2
+ DxxincomeXDxxgunlawXt |          0  (omitted)
+DxxincomeXDxxgunlawXt2 |          0  (omitted)
+   DxxincomeXDxxbeerXt |  -27695.59   65188.89    -0.42   0.673    -158697.6    103306.4
+  DxxincomeXDxxbeerXt2 |   39296.49   61420.49     0.64   0.525    -84132.62    162725.6
+  DxxpoverXDxxafdc15Xt |   48.36904   101.3001     0.48   0.635    -155.2011    251.9392
+ DxxpoverXDxxafdc15Xt2 |  -63.44935   95.81629    -0.66   0.511    -255.9994    129.1007
+  DxxpoverXDxxgunlawXt |   2504.323   1180.097     2.12   0.039     132.8298    4875.816
+ DxxpoverXDxxgunlawXt2 |  -1559.309   717.1384    -2.17   0.035    -3000.453   -118.1658
+    DxxpoverXDxxbeerXt |  -119.8586   884.5798    -0.14   0.893    -1897.488    1657.771
+   DxxpoverXDxxbeerXt2 |   223.8292    814.828     0.27   0.785    -1413.629    1861.287
+ Dxxafdc15XDxxgunlawXt |   748.7274   491.6874     1.52   0.134    -239.3554     1736.81
+Dxxafdc15XDxxgunlawXt2 |  -239.9307   218.9414    -1.10   0.278    -679.9098    200.0485
+   Dxxafdc15XDxxbeerXt |  -441.6166   258.4547    -1.71   0.094    -961.0009    77.76762
+  Dxxafdc15XDxxbeerXt2 |   455.8263   223.6489     2.04   0.047     6.387092    905.2655
+   DxxgunlawXDxxbeerXt |  -5322.475   2689.297    -1.98   0.053    -10726.82    81.87004
+  DxxgunlawXDxxbeerXt2 |   3243.593   1589.329     2.04   0.047       49.717    6437.469
+           LxxprisonXt |  -2.328089    1.21697    -1.91   0.062    -4.773682    .1175045
+          LxxprisonXt2 |   1.960203   1.150409     1.70   0.095    -.3516295    4.272036
+           LxxpoliceXt |  -4.892036   11.71658    -0.42   0.678    -28.43738    18.65331
+          LxxpoliceXt2 |   5.163817   8.759368     0.59   0.558    -12.43879    22.76642
+            LxxunempXt |   26.61963   37.46749     0.71   0.481    -48.67412    101.9134
+           LxxunempXt2 |  -8.996477   34.90385    -0.26   0.798    -79.13839    61.14544
+           LxxincomeXt |  -270.5532   638.1073    -0.42   0.673    -1552.878    1011.771
+          LxxincomeXt2 |     7664.2   4287.141     1.79   0.080    -951.1311    16279.53
+            LxxpoverXt |   -22.6525   21.56707    -1.05   0.299    -65.99315    20.68816
+           LxxpoverXt2 |   16.22659   18.25947     0.89   0.379    -20.46718    52.92036
+           Lxxafdc15Xt |   3.239678   4.393303     0.74   0.464    -5.588994    12.06835
+          Lxxafdc15Xt2 |  -2.747784   4.155033    -0.66   0.512    -11.09763    5.602066
+           LxxgunlawXt |          0  (omitted)
+          LxxgunlawXt2 |   .0998301   .3975006     0.25   0.803    -.6989773    .8986376
+             LxxbeerXt |   65.64579   66.71058     0.98   0.330    -68.41413    199.7057
+            LxxbeerXt2 |  -65.64967   58.53941    -1.12   0.268     -183.289    51.98969
+          Lxxprison2Xt |  -.0084895   .5743897    -0.01   0.988    -1.162769     1.14579
+         Lxxprison2Xt2 |   -.072363    .455216    -0.16   0.874    -.9871539    .8424279
+          Lxxpolice2Xt |    1.59752   5.519309     0.29   0.773    -9.493946    12.68899
+         Lxxpolice2Xt2 |  -1.955187    4.21263    -0.46   0.645    -10.42079     6.51041
+           Lxxunemp2Xt |  -6.673831   247.0474    -0.03   0.979    -503.1341    489.7865
+          Lxxunemp2Xt2 |  -154.3081   256.7094    -0.60   0.551     -670.185    361.5687
+          Lxxincome2Xt |          0  (omitted)
+         Lxxincome2Xt2 |  -37970.14   20972.91    -1.81   0.076    -80116.79    4176.506
+           Lxxpover2Xt |   82.83948   66.94827     1.24   0.222    -51.69809    217.3771
+          Lxxpover2Xt2 |  -57.00529   56.86694    -1.00   0.321    -171.2837    57.27311
+          Lxxafdc152Xt |  -1.105279   2.300504    -0.48   0.633    -5.728314    3.517756
+         Lxxafdc152Xt2 |   1.243464   2.128547     0.58   0.562     -3.03401    5.520939
+          Lxxgunlaw2Xt |  -.1365625   .4173619    -0.33   0.745    -.9752826    .7021575
+         Lxxgunlaw2Xt2 |          0  (omitted)
+            Lxxbeer2Xt |  -160.2278   122.3535    -1.31   0.196    -406.1063    85.65069
+           Lxxbeer2Xt2 |   162.7584    113.092     1.44   0.156     -64.5084    390.0252
+           MxxprisonXt |   8.079914   2.794952     2.89   0.006     2.463247    13.69658
+          MxxprisonXt2 |  -7.203948   2.799431    -2.57   0.013    -12.82962    -1.57828
+           MxxpoliceXt |   .9965122   15.17479     0.07   0.948    -29.49836    31.49139
+          MxxpoliceXt2 |  -4.659556   15.19587    -0.31   0.760    -35.19679    25.87768
+            MxxunempXt |  -126.5617   134.8559    -0.94   0.353    -397.5647    144.4413
+           MxxunempXt2 |   79.58289   126.1207     0.63   0.531    -173.8661    333.0319
+           MxxincomeXt |  -766.5027   928.7243    -0.83   0.413    -2632.844    1099.839
+          MxxincomeXt2 |    867.046   901.8571     0.96   0.341    -945.3036    2679.396
+            MxxpoverXt |  -49.92003   42.94403    -1.16   0.251    -136.2193    36.37922
+           MxxpoverXt2 |   37.99101   43.13235     0.88   0.383    -48.68669    124.6687
+           Mxxafdc15Xt |  -1.387524   10.55515    -0.13   0.896    -22.59888    19.82384
+          Mxxafdc15Xt2 |   .8774385   8.915321     0.10   0.922    -17.03857    18.79345
+           MxxgunlawXt |  -2.382613   1.979396    -1.20   0.234    -6.360357    1.595132
+          MxxgunlawXt2 |   2.277884     1.9022     1.20   0.237    -1.544731    6.100499
+             MxxbeerXt |   47.29868   71.43869     0.66   0.511    -96.26274    190.8601
+            MxxbeerXt2 |   -37.3009   69.58682    -0.54   0.594    -177.1409    102.5391
+          Mxxprison2Xt |  -4.334626   1.568586    -2.76   0.008    -7.486818   -1.182435
+         Mxxprison2Xt2 |   3.865116   1.543735     2.50   0.016     .7628647    6.967367
+          Mxxpolice2Xt |  -2.657207   7.864517    -0.34   0.737    -18.46154    13.14713
+         Mxxpolice2Xt2 |   3.964596   7.932186     0.50   0.619    -11.97573    19.90492
+           Mxxunemp2Xt |   1868.727   1350.927     1.38   0.173    -846.0619    4583.515
+          Mxxunemp2Xt2 |  -1302.758   1243.315    -1.05   0.300    -3801.293    1195.778
+          Mxxincome2Xt |          0  (omitted)
+         Mxxincome2Xt2 |          0  (omitted)
+           Mxxpover2Xt |   153.2707   112.3944     1.36   0.179    -72.59421    379.1357
+          Mxxpover2Xt2 |  -120.6413   110.8989    -1.09   0.282    -343.5009    102.2183
+          Mxxafdc152Xt |   1.340402   6.379909     0.21   0.834    -11.48051    14.16131
+         Mxxafdc152Xt2 |  -.8104632   5.554187    -0.15   0.885    -11.97202    10.35109
+          Mxxgunlaw2Xt |   3.401962   2.760772     1.23   0.224    -2.146018    8.949941
+         Mxxgunlaw2Xt2 |  -3.153938   2.590076    -1.22   0.229     -8.35889    2.051014
+            Mxxbeer2Xt |  -2.540604   115.2759    -0.02   0.983    -234.1962     229.115
+           Mxxbeer2Xt2 |  -4.545905   114.9304    -0.04   0.969    -235.5072    226.4154
+           xxprison0Xt |  -1.878045   1.954121    -0.96   0.341    -5.804998    2.048907
+          xxprison0Xt2 |   1.693133   1.690927     1.00   0.322    -1.704913    5.091178
+           xxpolice0Xt |  -12.17114   21.10188    -0.58   0.567    -54.57696    30.23467
+          xxpolice0Xt2 |    12.2274   19.24181     0.64   0.528    -26.44046    50.89526
+            xxunemp0Xt |   82.14264   68.35423     1.20   0.235    -55.22033    219.5056
+           xxunemp0Xt2 |  -71.09924   62.17095    -1.14   0.258    -196.0364    53.83796
+           xxincome0Xt |   1165.313   1028.113     1.13   0.263    -900.7578    3231.383
+          xxincome0Xt2 |  -7208.653   4043.247    -1.78   0.081    -15333.86    916.5566
+            xxpover0Xt |    90.0917   43.92053     2.05   0.046      1.83009    178.3533
+           xxpover0Xt2 |  -75.08752   41.42135    -1.81   0.076    -158.3268    8.151792
+           xxafdc150Xt |   9.053317    6.14674     1.47   0.147    -3.299019    21.40565
+          xxafdc150Xt2 |  -7.641977   4.735653    -1.61   0.113    -17.15863    1.874674
+           xxgunlaw0Xt |          0  (omitted)
+          xxgunlaw0Xt2 |          0  (omitted)
+             xxbeer0Xt |  -115.3467    70.4281    -1.64   0.108    -256.8773    26.18388
+            xxbeer0Xt2 |   103.2154   56.19381     1.84   0.072    -9.710241    216.1411
+          Dxxprison0Xt |  -1.887601   2.142884    -0.88   0.383    -6.193888    2.418685
+         Dxxprison0Xt2 |   1.524889    1.83494     0.83   0.410    -2.162562     5.21234
+          Dxxpolice0Xt |   9.022821   7.681195     1.17   0.246    -6.413118    24.45876
+         Dxxpolice0Xt2 |  -7.964552   6.927645    -1.15   0.256    -21.88618    5.957072
+           Dxxunemp0Xt |  -13.37722   30.46847    -0.44   0.663    -74.60589    47.85145
+          Dxxunemp0Xt2 |   14.89862   27.53659     0.54   0.591    -40.43824    70.23547
+          Dxxincome0Xt |    2072.12   1642.493     1.26   0.213    -1228.594    5372.834
+         Dxxincome0Xt2 |  -1612.323   1373.103    -1.17   0.246    -4371.676     1147.03
+           Dxxpover0Xt |      21.82   10.87813     2.01   0.050    -.0404252    43.68043
+          Dxxpover0Xt2 |  -20.72889   10.01715    -2.07   0.044    -40.85911   -.5986727
+          Dxxafdc150Xt |   1.520417   3.197011     0.48   0.636    -4.904218    7.945052
+         Dxxafdc150Xt2 |  -1.608036   2.789592    -0.58   0.567     -7.21393    3.997858
+          Dxxgunlaw0Xt |          0  (omitted)
+         Dxxgunlaw0Xt2 |          0  (omitted)
+            Dxxbeer0Xt |  -.0894982   28.62491    -0.00   0.998    -57.61341    57.43441
+           Dxxbeer0Xt2 |  -5.255708   22.21002    -0.24   0.814    -49.88841      39.377
+          xxprison02Xt |   4.202284   1.366892     3.07   0.003     1.455412    6.949156
+         xxprison02Xt2 |  -3.503462   1.245535    -2.81   0.007    -6.006459   -1.000466
+          xxpolice02Xt |   8.546377   10.96067     0.78   0.439    -13.47991    30.57267
+         xxpolice02Xt2 |  -7.902632   10.24426    -0.77   0.444    -28.48925    12.68399
+           xxunemp02Xt |  -962.8714    441.961    -2.18   0.034    -1851.025   -74.71752
+          xxunemp02Xt2 |   813.3833   408.8347     1.99   0.052    -8.200689    1634.967
+          xxincome02Xt |          0  (omitted)
+         xxincome02Xt2 |   30978.73   19284.24     1.61   0.115    -7774.398    69731.85
+           xxpover02Xt |  -251.3424   132.1035    -1.90   0.063    -516.8143    14.12962
+          xxpover02Xt2 |   206.6391    126.009     1.64   0.107    -46.58542    459.8637
+          xxafdc1502Xt |  -5.935187   3.404626    -1.74   0.088    -12.77704    .9066653
+         xxafdc1502Xt2 |    4.77603   2.826464     1.69   0.097    -.9039626    10.45602
+          xxgunlaw02Xt |  -1.325487   1.020409    -1.30   0.200    -3.376077     .725102
+         xxgunlaw02Xt2 |   1.188995   .9630277     1.23   0.223    -.7462821    3.124271
+            xxbeer02Xt |   169.8247   114.7107     1.48   0.145    -60.69507    400.3445
+           xxbeer02Xt2 |  -158.0801   90.76568    -1.74   0.088    -340.4806    24.32031
+             _Iyear_87 |  -2.584859   2.989206    -0.86   0.391    -8.591893    3.422175
+             _Iyear_88 |  -5.808312   6.798909    -0.85   0.397    -19.47123    7.854607
+             _Iyear_89 |  -9.895138   11.72766    -0.84   0.403    -33.46275    13.67248
+             _Iyear_90 |  -14.67945   17.95639    -0.82   0.418    -50.76417    21.40528
+             _Iyear_91 |  -20.41591   25.60214    -0.80   0.429    -71.86535    31.03352
+             _Iyear_92 |  -27.04657   34.69742    -0.78   0.439    -96.77364    42.68049
+             _Iyear_93 |  -34.43682    45.2763    -0.76   0.451     -125.423    56.54931
+             _Iyear_94 |  -42.70676   57.35415    -0.74   0.460    -157.9643    72.55073
+             _Iyear_95 |  -51.80889   70.93988    -0.73   0.469    -194.3679    90.75015
+             _Iyear_96 |  -61.77606   86.04985    -0.72   0.476    -234.6997    111.1476
+             _Iyear_97 |  -72.58912    102.681    -0.71   0.483    -278.9344    133.7561
+                 _cons |   39.09263   46.56568     0.84   0.405    -54.48461    132.6699
+----------------------------------------------------------------------------------------
+
+. reg Dyprop Dprop `AllProp' `tdums' , cluster(statenum) ;
+note: Dxxgunlaw2 omitted because of collinearity
+note: Lxxgunlaw2 omitted because of collinearity
+note: Dxxgunlaw0 omitted because of collinearity
+note: xxgunlaw02 omitted because of collinearity
+note: Dxxgunlaw2Xt omitted because of collinearity
+note: Dxxgunlaw2Xt2 omitted because of collinearity
+note: DxxincomeXDxxgunlawXt omitted because of collinearity
+note: DxxincomeXDxxgunlawXt2 omitted because of collinearity
+note: LxxgunlawXt omitted because of collinearity
+note: Lxxincome2Xt omitted because of collinearity
+note: Lxxgunlaw2Xt2 omitted because of collinearity
+note: Mxxincome2Xt omitted because of collinearity
+note: Mxxincome2Xt2 omitted because of collinearity
+note: xxgunlaw0Xt omitted because of collinearity
+note: xxgunlaw0Xt2 omitted because of collinearity
+note: Dxxgunlaw0Xt omitted because of collinearity
+note: Dxxgunlaw0Xt2 omitted because of collinearity
+note: xxincome02Xt omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 49,    49) =       .
+                                                       Prob > F      =       .
+                                                       R-squared     =  0.6757
+                                                       Root MSE      =    .043
+
+                                        (Std. Err. adjusted for 50 clusters in statenum)
+----------------------------------------------------------------------------------------
+                       |               Robust
+                Dyprop |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------------+----------------------------------------------------------------
+                 Dprop |  -.1610611    .106061    -1.52   0.135    -.3741987    .0520765
+                 prop0 |    5.43879   3.351524     1.62   0.111    -1.296351    12.17393
+               prop0Xt |   -24.2345   15.59352    -1.55   0.127    -55.57085    7.101858
+              prop0Xt2 |   20.51644   14.27392     1.44   0.157    -8.168064    49.20095
+                prop02 |   -30.2674   14.85811    -2.04   0.047    -60.12589   -.4089036
+              prop02Xt |   143.6311   68.88419     2.09   0.042     5.203143     282.059
+             prop02Xt2 |  -125.8226   63.88994    -1.97   0.055    -254.2142    2.569101
+                Dprop0 |  -9.347734    6.25956    -1.49   0.142    -21.92679    3.231322
+              Dprop0Xt |   42.60188   28.11978     1.52   0.136    -13.90694     99.1107
+             Dprop0Xt2 |   -36.7324   25.79171    -1.42   0.161    -88.56278    15.09799
+               Dprop02 |    105.081   52.57486     2.00   0.051    -.5721368    210.7341
+             Dprop02Xt |  -504.8209   240.1045    -2.10   0.041    -987.3289   -22.31292
+            Dprop02Xt2 |   444.4567    222.508     2.00   0.051     -2.68994    891.6033
+             Dxxprison |  -.2578893   .4644011    -0.56   0.581    -1.191138    .6753596
+             Dxxpolice |  -.1398686   .8912358    -0.16   0.876    -1.930874    1.651137
+              Dxxunemp |  -7.834628    3.96449    -1.98   0.054    -15.80157     .132312
+             Dxxincome |  -66.76383   181.1328    -0.37   0.714    -430.7639    297.2362
+              Dxxpover |    1.10612   1.385006     0.80   0.428    -1.677155    3.889394
+             Dxxafdc15 |  -1.111382   .4059413    -2.74   0.009    -1.927152   -.2956123
+             Dxxgunlaw |   4.215097   .9965275     4.23   0.000       2.2125    6.217694
+               Dxxbeer |   6.613294   4.328923     1.53   0.133    -2.086003    15.31259
+            Dxxprison2 |   2.306724   1.691689     1.36   0.179    -1.092853    5.706301
+            Dxxpolice2 |  -6.051628   7.816491    -0.77   0.443    -21.75946    9.656199
+             Dxxunemp2 |  -346.2368   203.9312    -1.70   0.096     -756.052    63.57831
+            Dxxincome2 |  -482811.6   263865.3    -1.83   0.073     -1013069    47445.57
+             Dxxpover2 |  -20.39748   19.15362    -1.06   0.292    -58.88811    18.09316
+            Dxxafdc152 |   .6420289   1.939625     0.33   0.742    -3.255793    4.539851
+            Dxxgunlaw2 |          0  (omitted)
+              Dxxbeer2 |    357.266   208.7207     1.71   0.093    -62.17404    776.7059
+   DxxprisonXDxxpolice |   5.902242   7.466014     0.79   0.433    -9.101274    20.90576
+    DxxprisonXDxxunemp |   54.89484   31.52358     1.74   0.088    -8.454158    118.2438
+   DxxprisonXDxxincome |   135.1082   970.2479     0.14   0.890    -1814.678    2084.894
+    DxxprisonXDxxpover |   3.337024   12.02663     0.28   0.783     -20.8314    27.50545
+   DxxprisonXDxxafdc15 |   9.015139    6.99295     1.29   0.203     -5.03772      23.068
+   DxxprisonXDxxgunlaw |  -29.70392   7.161276    -4.15   0.000    -44.09505    -15.3128
+     DxxprisonXDxxbeer |   47.13303   45.44764     1.04   0.305    -44.19742    138.4635
+    DxxpoliceXDxxunemp |   165.1359   74.99336     2.20   0.032     14.43108    315.8407
+   DxxpoliceXDxxincome |   2552.099   2403.208     1.06   0.293    -2277.329    7381.526
+    DxxpoliceXDxxpover |  -56.99339   22.98162    -2.48   0.017    -103.1767    -10.8101
+   DxxpoliceXDxxafdc15 |   3.938032   10.44222     0.38   0.708    -17.04638    24.92245
+   DxxpoliceXDxxgunlaw |   204.6455   47.71246     4.29   0.000     108.7638    300.5273
+     DxxpoliceXDxxbeer |   -82.9584   105.3642    -0.79   0.435    -294.6956    128.7788
+    DxxunempXDxxincome |  -12356.86   9347.694    -1.32   0.192    -31141.76    6428.029
+     DxxunempXDxxpover |   124.8255   86.92976     1.44   0.157    -49.86638    299.5174
+    DxxunempXDxxafdc15 |  -40.02073   48.20727    -0.83   0.410    -136.8969    56.85541
+    DxxunempXDxxgunlaw |  -2706.887   653.7233    -4.14   0.000    -4020.593   -1393.181
+      DxxunempXDxxbeer |  -550.0696   296.1116    -1.86   0.069    -1145.128     44.9888
+    DxxincomeXDxxpover |   3650.791   3153.698     1.16   0.253    -2686.802    9988.384
+   DxxincomeXDxxafdc15 |  -475.5014   1673.938    -0.28   0.778    -3839.406    2888.403
+   DxxincomeXDxxgunlaw |   6962.733   1612.983     4.32   0.000     3721.322    10204.14
+     DxxincomeXDxxbeer |  -26304.87   9546.613    -2.76   0.008    -45489.51   -7120.231
+    DxxpoverXDxxafdc15 |    7.83652    14.6255     0.54   0.595    -21.55453    37.22757
+    DxxpoverXDxxgunlaw |  -1279.229   299.1453    -4.28   0.000    -1880.384   -678.0743
+      DxxpoverXDxxbeer |   117.5098   98.52217     1.19   0.239    -80.47787    315.4975
+   Dxxafdc15XDxxgunlaw |  -622.5814   153.0008    -4.07   0.000     -930.048   -315.1148
+     Dxxafdc15XDxxbeer |   44.38154    41.0998     1.08   0.285     -38.2116    126.9747
+     DxxgunlawXDxxbeer |   2827.061   687.0747     4.11   0.000     1446.332    4207.789
+             Lxxprison |   .4204228   .2508423     1.68   0.100    -.0836637    .9245094
+             Lxxpolice |  -2.175022   2.913106    -0.75   0.459    -8.029128    3.679084
+              Lxxunemp |  -7.812626    6.10387    -1.28   0.207    -20.07881     4.45356
+             Lxxincome |  -1489.012   1393.465    -1.07   0.291    -4289.285    1311.261
+              Lxxpover |   6.172668   2.884657     2.14   0.037     .3757322     11.9696
+             Lxxafdc15 |  -1.267356   .7864453    -1.61   0.113    -2.847777    .3130652
+             Lxxgunlaw |  -.1312526   .0797039    -1.65   0.106    -.2914236    .0289184
+               Lxxbeer |  -12.44501   13.69968    -0.91   0.368    -39.97554    15.08552
+            Lxxprison2 |  -.1875429   .1526917    -1.23   0.225    -.4943883    .1193024
+            Lxxpolice2 |    1.44764   1.363728     1.06   0.294    -1.292874    4.188153
+             Lxxunemp2 |   14.73498   37.97782     0.39   0.700     -61.5843    91.05427
+            Lxxincome2 |   7531.085   6990.805     1.08   0.287    -6517.464    21579.63
+             Lxxpover2 |  -18.49575   8.775007    -2.11   0.040    -36.12979   -.8617141
+            Lxxafdc152 |   .5374756    .379336     1.42   0.163    -.2248286     1.29978
+            Lxxgunlaw2 |          0  (omitted)
+              Lxxbeer2 |   30.05809   23.57474     1.28   0.208    -17.31713    77.43331
+             Mxxprison |   .0755019   .2791027     0.27   0.788    -.4853759    .6363797
+             Mxxpolice |   1.172103   1.850744     0.63   0.529    -2.547107    4.891314
+              Mxxunemp |   19.68902   20.07849     0.98   0.332    -20.66022    60.03826
+             Mxxincome |   484.9346   1382.891     0.35   0.727    -2294.089    3263.958
+              Mxxpover |  -3.302935   5.648535    -0.58   0.561    -14.65409    8.048221
+             Mxxafdc15 |  -.3849423   1.204661    -0.32   0.751      -2.8058    2.035915
+             Mxxgunlaw |   .1831046     .25599     0.72   0.478    -.3313266    .6975358
+               Mxxbeer |   6.663142   7.724459     0.86   0.393     -8.85974    22.18602
+            Mxxprison2 |   .0634953   .1628349     0.39   0.698    -.2637337    .3907244
+            Mxxpolice2 |  -.4996971   .9779681    -0.51   0.612    -2.464998    1.465603
+             Mxxunemp2 |  -181.1199   191.4841    -0.95   0.349    -565.9216    203.6818
+            Mxxincome2 |  -2018.739   6740.052    -0.30   0.766    -15563.38     11525.9
+             Mxxpover2 |   5.083227   15.29863     0.33   0.741    -25.66051    35.82697
+            Mxxafdc152 |   .0964082   .7836346     0.12   0.903    -1.478364    1.671181
+            Mxxgunlaw2 |  -.0505596    .336377    -0.15   0.881    -.7265345    .6254152
+              Mxxbeer2 |  -23.28453   14.67472    -1.59   0.119    -52.77448    6.205429
+             xxprison0 |  -.4758597   .3580398    -1.33   0.190    -1.195368    .2436481
+             xxpolice0 |   1.459004   3.085614     0.47   0.638    -4.741771    7.659778
+              xxunemp0 |  -13.71332   13.55683    -1.01   0.317    -40.95678    13.53014
+             xxincome0 |    399.624   1505.753     0.27   0.792      -2626.3    3425.548
+              xxpover0 |  -1.809157   5.207562    -0.35   0.730    -12.27414    8.655831
+             xxafdc150 |   .1551941    1.04241     0.15   0.882    -1.939608    2.249996
+             xxgunlaw0 |   .0343548   .1482474     0.23   0.818    -.2635595    .3322691
+               xxbeer0 |   6.283738   11.90575     0.53   0.600    -17.64175    30.20923
+            Dxxprison0 |  -.1876573   .3743284    -0.50   0.618    -.9398984    .5645837
+            Dxxpolice0 |  -1.760357   1.118588    -1.57   0.122    -4.008243    .4875297
+             Dxxunemp0 |   1.538275   4.455655     0.35   0.731    -7.415698    10.49225
+            Dxxincome0 |  -254.8354   272.3336    -0.94   0.354    -802.1102    292.4394
+             Dxxpover0 |  -1.872462   1.633977    -1.15   0.257    -5.156063    1.411138
+            Dxxafdc150 |  -.0273293   .3925352    -0.07   0.945    -.8161583    .7614997
+            Dxxgunlaw0 |          0  (omitted)
+              Dxxbeer0 |  -4.380262   4.114639    -1.06   0.292    -12.64894    3.888415
+            xxprison02 |   .1222771   .2099291     0.58   0.563    -.2995912    .5441454
+            xxpolice02 |  -1.160359   1.565907    -0.74   0.462    -4.307167     1.98645
+             xxunemp02 |   124.1868   91.09638     1.36   0.179    -58.87823    307.2518
+            xxincome02 |  -2591.844   7473.769    -0.35   0.730    -17610.95    12427.26
+             xxpover02 |   6.785097   15.96679     0.42   0.673    -25.30136    38.87156
+            xxafdc1502 |   .2635941   .5523323     0.48   0.635    -.8463591    1.373547
+            xxgunlaw02 |          0  (omitted)
+              xxbeer02 |  -8.961449   19.80225    -0.45   0.653    -48.75555    30.83265
+           DxxprisonXt |   .1028125   2.306627     0.04   0.965    -4.532528    4.738153
+          DxxprisonXt2 |   .1334813   2.145184     0.06   0.951    -4.177427     4.44439
+           DxxpoliceXt |   1.082175   2.597272     0.42   0.679    -4.137237    6.301588
+          DxxpoliceXt2 |  -.9040029   1.864397    -0.48   0.630    -4.650649    2.842643
+            DxxunempXt |   42.32424   16.90985     2.50   0.016     8.342636    76.30585
+           DxxunempXt2 |  -45.88978   15.31126    -3.00   0.004     -76.6589   -15.12066
+           DxxincomeXt |      444.8   761.7789     0.58   0.562    -1086.052    1975.652
+          DxxincomeXt2 |  -465.8542    650.382    -0.72   0.477    -1772.846    841.1375
+            DxxpoverXt |   -3.69903    5.12652    -0.72   0.474    -14.00116    6.603098
+           DxxpoverXt2 |    2.70487   4.557532     0.59   0.556    -6.453834    11.86357
+           Dxxafdc15Xt |   1.761852   2.074893     0.85   0.400    -2.407802    5.931505
+          Dxxafdc15Xt2 |  -.1850149   2.133724    -0.09   0.931    -4.472894    4.102864
+           DxxgunlawXt |  -64.17167   15.12287    -4.24   0.000    -94.56222   -33.78112
+          DxxgunlawXt2 |   68.08905     16.055     4.24   0.000     35.82532    100.3528
+             DxxbeerXt |  -17.30649   16.41336    -1.05   0.297    -50.29037    15.67739
+            DxxbeerXt2 |   7.904717   15.38417     0.51   0.610    -23.01093    38.82036
+          Dxxprison2Xt |   .0482637   8.825388     0.01   0.996    -17.68702    17.78355
+         Dxxprison2Xt2 |  -2.405176   8.269095    -0.29   0.772    -19.02255    14.21219
+          Dxxpolice2Xt |   16.91508   21.20262     0.80   0.429    -25.69318    59.52334
+         Dxxpolice2Xt2 |  -11.79938   14.46224    -0.82   0.419    -40.86234    17.26358
+           Dxxunemp2Xt |   1941.713   855.8302     2.27   0.028     221.8582    3661.569
+          Dxxunemp2Xt2 |  -1933.115   785.6207    -2.46   0.017    -3511.879   -354.3512
+          Dxxincome2Xt |    1984844    1378818     1.44   0.156    -785994.1     4755681
+         Dxxincome2Xt2 |   -1770314    1296494    -1.37   0.178     -4375717    835087.9
+           Dxxpover2Xt |    139.528   88.14255     1.58   0.120    -37.60108    316.6571
+          Dxxpover2Xt2 |  -144.3687   82.14818    -1.76   0.085    -309.4516    20.71429
+          Dxxafdc152Xt |   .7617284   9.941186     0.08   0.939    -19.21583    20.73929
+         Dxxafdc152Xt2 |    -4.5274   9.548546    -0.47   0.638    -23.71592    14.66112
+          Dxxgunlaw2Xt |          0  (omitted)
+         Dxxgunlaw2Xt2 |          0  (omitted)
+            Dxxbeer2Xt |  -907.9983   535.2058    -1.70   0.096    -1983.535    167.5381
+           Dxxbeer2Xt2 |   574.2946   332.2259     1.73   0.090     -93.3384    1241.928
+ DxxprisonXDxxpoliceXt |  -16.87568   26.14049    -0.65   0.522    -69.40695     35.6556
+DxxprisonXDxxpoliceXt2 |   10.87517   21.38915     0.51   0.613    -32.10795    53.85828
+  DxxprisonXDxxunempXt |  -284.8724   155.7216    -1.83   0.073    -597.8066    28.06188
+ DxxprisonXDxxunempXt2 |   273.1536   143.9019     1.90   0.064    -16.02802    562.3352
+ DxxprisonXDxxincomeXt |  -684.3636   4773.001    -0.14   0.887    -10276.07    8907.341
+DxxprisonXDxxincomeXt2 |   594.6466   4526.299     0.13   0.896    -8501.292    9690.585
+  DxxprisonXDxxpoverXt |  -22.71615   54.35061    -0.42   0.678    -131.9378    86.50549
+ DxxprisonXDxxpoverXt2 |   30.83724   51.37918     0.60   0.551     -72.4131    134.0876
+ DxxprisonXDxxafdc15Xt |  -23.35037   36.67894    -0.64   0.527    -97.05946    50.35871
+DxxprisonXDxxafdc15Xt2 |   14.21474   32.70485     0.43   0.666    -51.50812     79.9376
+ DxxprisonXDxxgunlawXt |   728.7452     172.38     4.23   0.000     382.3345    1075.156
+DxxprisonXDxxgunlawXt2 |  -840.0282   199.3015    -4.21   0.000     -1240.54   -439.5168
+   DxxprisonXDxxbeerXt |   -240.161   186.6959    -1.29   0.204    -615.3405    135.0184
+  DxxprisonXDxxbeerXt2 |   239.6842    175.639     1.36   0.179    -113.2757     592.644
+  DxxpoliceXDxxunempXt |  -627.6275   215.1034    -2.92   0.005    -1059.894   -195.3609
+ DxxpoliceXDxxunempXt2 |   563.3691   155.2257     3.63   0.001     251.4314    875.3068
+ DxxpoliceXDxxincomeXt |  -11388.74   9226.134    -1.23   0.223    -29929.35    7151.873
+DxxpoliceXDxxincomeXt2 |   9849.253   7908.461     1.25   0.219    -6043.394     25741.9
+  DxxpoliceXDxxpoverXt |    166.792    70.1713     2.38   0.021     25.77745    307.8065
+ DxxpoliceXDxxpoverXt2 |  -130.0482   52.55766    -2.47   0.017    -235.6668   -24.42966
+ DxxpoliceXDxxafdc15Xt |  -17.96762   39.20632    -0.46   0.649    -96.75567    60.82042
+DxxpoliceXDxxafdc15Xt2 |   18.91335   33.75952     0.56   0.578    -48.92894    86.75564
+ DxxpoliceXDxxgunlawXt |  -992.7396   232.1731    -4.28   0.000    -1459.309   -526.1704
+DxxpoliceXDxxgunlawXt2 |   896.0226   209.7974     4.27   0.000     474.4189    1317.626
+   DxxpoliceXDxxbeerXt |   311.4072   308.3203     1.01   0.317    -308.1856    931.0001
+  DxxpoliceXDxxbeerXt2 |   -278.607   229.5352    -1.21   0.231    -739.8752    182.6612
+  DxxunempXDxxincomeXt |    41415.5   41939.56     0.99   0.328     -42865.2    125696.2
+ DxxunempXDxxincomeXt2 |  -27480.92   37737.96    -0.73   0.470    -103318.2    48356.36
+   DxxunempXDxxpoverXt |  -619.4085   355.6244    -1.74   0.088    -1334.063    95.24552
+  DxxunempXDxxpoverXt2 |   601.3546   334.5365     1.80   0.078    -70.92163    1273.631
+  DxxunempXDxxafdc15Xt |   236.4949   237.3389     1.00   0.324    -240.4555    713.4454
+ DxxunempXDxxafdc15Xt2 |  -251.8244   222.4764    -1.13   0.263    -698.9074    195.2586
+  DxxunempXDxxgunlawXt |   9657.894   2339.253     4.13   0.000      4956.99     14358.8
+ DxxunempXDxxgunlawXt2 |  -7863.048   1904.134    -4.13   0.000    -11689.55   -4036.546
+    DxxunempXDxxbeerXt |   2813.517   1202.115     2.34   0.023     397.7765    5229.257
+   DxxunempXDxxbeerXt2 |  -3035.556   1199.981    -2.53   0.015    -5447.007   -624.1047
+  DxxincomeXDxxpoverXt |  -12476.41   16678.37    -0.75   0.458    -45992.85    21040.03
+ DxxincomeXDxxpoverXt2 |   10284.64   16318.94     0.63   0.531    -22509.49    43078.76
+ DxxincomeXDxxafdc15Xt |   6692.613   8014.415     0.84   0.408    -9412.958    22798.18
+DxxincomeXDxxafdc15Xt2 |  -7873.004   7268.286    -1.08   0.284    -22479.17    6733.163
+ DxxincomeXDxxgunlawXt |          0  (omitted)
+DxxincomeXDxxgunlawXt2 |          0  (omitted)
+   DxxincomeXDxxbeerXt |   84531.97   45831.98     1.84   0.071    -7570.845    176634.8
+  DxxincomeXDxxbeerXt2 |  -54644.26   44386.63    -1.23   0.224    -143842.5    34554.01
+  DxxpoverXDxxafdc15Xt |  -37.02736   73.77296    -0.50   0.618    -185.2797     111.225
+ DxxpoverXDxxafdc15Xt2 |    36.1204   68.98111     0.52   0.603    -102.5023    174.7431
+  DxxpoverXDxxgunlawXt |   3171.419   734.8766     4.32   0.000      1694.63    4648.209
+ DxxpoverXDxxgunlawXt2 |   -1940.64   446.7916    -4.34   0.000    -2838.502   -1042.779
+    DxxpoverXDxxbeerXt |  -588.6723   416.0861    -1.41   0.163    -1424.829     247.484
+   DxxpoverXDxxbeerXt2 |   616.5779   395.0524     1.56   0.125    -177.3096    1410.465
+ Dxxafdc15XDxxgunlawXt |   1190.444   305.7889     3.89   0.000     575.9385     1804.95
+Dxxafdc15XDxxgunlawXt2 |  -471.2285   135.1846    -3.49   0.001    -742.8921    -199.565
+   Dxxafdc15XDxxbeerXt |  -280.5272   174.0469    -1.61   0.113    -630.2875    69.23303
+  Dxxafdc15XDxxbeerXt2 |   356.6987   155.3085     2.30   0.026     44.59454    668.8029
+   DxxgunlawXDxxbeerXt |  -7166.647   1755.841    -4.08   0.000    -10695.14   -3638.152
+  DxxgunlawXDxxbeerXt2 |   4283.305   1059.277     4.04   0.000     2154.608    6412.002
+           LxxprisonXt |  -1.033971   .7512759    -1.38   0.175    -2.543716    .4757747
+          LxxprisonXt2 |   .4919369   .6831916     0.72   0.475    -.8809881    1.864862
+           LxxpoliceXt |    3.25884   8.529397     0.38   0.704    -13.88162     20.3993
+          LxxpoliceXt2 |   .0783235   6.181346     0.01   0.990    -12.34356     12.5002
+            LxxunempXt |    21.4142   21.84656     0.98   0.332    -22.48811     65.3165
+           LxxunempXt2 |  -20.27205   21.78119    -0.93   0.357    -64.04299     23.4989
+           LxxincomeXt |   305.3831   383.3785     0.80   0.430    -465.0448    1075.811
+          LxxincomeXt2 |    4327.64   3121.027     1.39   0.172    -1944.299    10599.58
+            LxxpoverXt |  -21.22439   11.95744    -1.77   0.082    -45.25377    2.804982
+           LxxpoverXt2 |   13.89293   10.58296     1.31   0.195    -7.374318    35.16018
+           Lxxafdc15Xt |   3.218363    3.10762     1.04   0.305    -3.026633    9.463359
+          Lxxafdc15Xt2 |  -3.494383   2.791821    -1.25   0.217    -9.104757     2.11599
+           LxxgunlawXt |          0  (omitted)
+          LxxgunlawXt2 |  -.6056026   .2847029    -2.13   0.038    -1.177734   -.0334708
+             LxxbeerXt |   36.47795   42.43289     0.86   0.394    -48.79414      121.75
+            LxxbeerXt2 |  -28.47222   34.25557    -0.83   0.410    -97.31138    40.36693
+          Lxxprison2Xt |   .5050684   .3497685     1.44   0.155    -.1978177    1.207955
+         Lxxprison2Xt2 |  -.2310583   .2694016    -0.86   0.395     -.772441    .3103245
+          Lxxpolice2Xt |  -2.750658   4.032722    -0.68   0.498    -10.85472    5.353401
+         Lxxpolice2Xt2 |   .8578173   2.964587     0.29   0.774    -5.099743    6.815377
+           Lxxunemp2Xt |    24.4094   143.7986     0.17   0.866    -264.5647    313.3836
+          Lxxunemp2Xt2 |  -28.33488   150.1002    -0.19   0.851    -329.9724    273.3027
+          Lxxincome2Xt |          0  (omitted)
+         Lxxincome2Xt2 |  -23784.78   15355.52    -1.55   0.128    -54642.86    7073.303
+           Lxxpover2Xt |   59.81456   34.80409     1.72   0.092    -10.12687     129.756
+          Lxxpover2Xt2 |  -35.73258   29.48454    -1.21   0.231    -94.98398    23.51882
+          Lxxafdc152Xt |   -1.44651   1.583361    -0.91   0.365    -4.628394    1.735374
+         Lxxafdc152Xt2 |   1.699873   1.416764     1.20   0.236    -1.147221    4.546966
+          Lxxgunlaw2Xt |    .696768    .303947     2.29   0.026     .0859636    1.307572
+         Lxxgunlaw2Xt2 |          0  (omitted)
+            Lxxbeer2Xt |  -93.37306   75.22393    -1.24   0.220    -244.5412    57.79508
+           Lxxbeer2Xt2 |   73.73652   62.00602     1.19   0.240    -50.86924    198.3423
+           MxxprisonXt |  -.3307696   1.464587    -0.23   0.822    -3.273967    2.612428
+          MxxprisonXt2 |   .1494911   1.557387     0.10   0.924    -2.980195    3.279177
+           MxxpoliceXt |   6.114628   8.819127     0.69   0.491    -11.60807    23.83733
+          MxxpoliceXt2 |  -12.17503   8.865836    -1.37   0.176    -29.99159    5.641535
+            MxxunempXt |  -149.2406   98.39838    -1.52   0.136    -346.9795    48.49839
+           MxxunempXt2 |   166.2107   98.03475     1.70   0.096    -30.79747    363.2189
+           MxxincomeXt |  -883.0135   465.9902    -1.89   0.064    -1819.456    53.42882
+          MxxincomeXt2 |   1098.541   459.9789     2.39   0.021     174.1793    2022.904
+            MxxpoverXt |   21.36656   28.44664     0.75   0.456    -35.79911    78.53222
+           MxxpoverXt2 |  -20.16096   28.77406    -0.70   0.487    -77.98459    37.66268
+           Mxxafdc15Xt |   4.094375   6.933983     0.59   0.558    -9.839986    18.02874
+          Mxxafdc15Xt2 |  -2.043486   6.066725    -0.34   0.738    -14.23503    10.14806
+           MxxgunlawXt |  -.6742337   1.284079    -0.53   0.602    -3.254688     1.90622
+          MxxgunlawXt2 |   .6092177   1.242241     0.49   0.626    -1.887158    3.105594
+             MxxbeerXt |   1.479709   40.23286     0.04   0.971    -79.37124    82.33066
+            MxxbeerXt2 |  -8.382992   42.15541    -0.20   0.843    -93.09746    76.33148
+          Mxxprison2Xt |  -.4028712   .7812273    -0.52   0.608    -1.972806    1.167064
+         Mxxprison2Xt2 |   .3806429   .7634085     0.50   0.620    -1.153484     1.91477
+          Mxxpolice2Xt |  -3.527302   4.805168    -0.73   0.466    -13.18365    6.129045
+         Mxxpolice2Xt2 |   6.239293    4.86533     1.28   0.206    -3.537952    16.01654
+           Mxxunemp2Xt |   1280.045   928.8203     1.38   0.174    -586.4891     3146.58
+          Mxxunemp2Xt2 |  -1373.652   912.4933    -1.51   0.139    -3207.376    460.0721
+          Mxxincome2Xt |          0  (omitted)
+         Mxxincome2Xt2 |          0  (omitted)
+           Mxxpover2Xt |  -35.59162   73.43666    -0.48   0.630    -183.1681    111.9849
+          Mxxpover2Xt2 |   34.93201   73.12681     0.48   0.635    -112.0218    181.8858
+          Mxxafdc152Xt |  -2.440972   4.099086    -0.60   0.554    -10.67839    5.796451
+         Mxxafdc152Xt2 |   1.933062    3.56548     0.54   0.590    -5.232039    9.098163
+          Mxxgunlaw2Xt |  -.2386304   1.789266    -0.13   0.894    -3.834295    3.357034
+         Mxxgunlaw2Xt2 |    .217975   1.663958     0.13   0.896    -3.125873    3.561823
+            Mxxbeer2Xt |   32.35721    70.0467     0.46   0.646    -108.4069    173.1213
+           Mxxbeer2Xt2 |  -4.373613   74.69338    -0.06   0.954    -154.4756    145.7284
+           xxprison0Xt |   1.913032   1.348578     1.42   0.162    -.7970372    4.623101
+          xxprison0Xt2 |  -1.445618   1.145094    -1.26   0.213     -3.74677    .8555338
+           xxpolice0Xt |  -14.88129   12.96266    -1.15   0.257    -40.93074    11.16816
+          xxpolice0Xt2 |   18.32331   12.33693     1.49   0.144    -6.468682    43.11531
+            xxunemp0Xt |    82.4459   55.21734     1.49   0.142    -28.51751    193.4093
+           xxunemp0Xt2 |   -78.6646   50.42144    -1.56   0.125    -179.9903    22.66108
+           xxincome0Xt |   700.9298   541.4808     1.29   0.202    -387.2167    1789.076
+          xxincome0Xt2 |  -2887.776   3388.937    -0.85   0.398    -9698.099    3922.547
+            xxpover0Xt |    17.7342   24.97451     0.71   0.481    -32.45396    67.92236
+           xxpover0Xt2 |  -20.26215   24.23741    -0.84   0.407    -68.96905    28.44475
+           xxafdc150Xt |   -2.03291    4.19593    -0.48   0.630    -10.46495    6.399127
+          xxafdc150Xt2 |   1.548887   3.406994     0.45   0.651    -5.297724    8.395499
+           xxgunlaw0Xt |          0  (omitted)
+          xxgunlaw0Xt2 |          0  (omitted)
+             xxbeer0Xt |  -36.14594   42.98945    -0.84   0.405    -122.5365    50.24459
+            xxbeer0Xt2 |    31.1222   36.20107     0.86   0.394    -41.62658     103.871
+          Dxxprison0Xt |   .3027682   1.336646     0.23   0.822    -2.383322    2.988859
+         Dxxprison0Xt2 |  -.1433743   1.118316    -0.13   0.899    -2.390715    2.103966
+          Dxxpolice0Xt |   6.309152   5.796079     1.09   0.282    -5.338505    17.95681
+         Dxxpolice0Xt2 |  -4.982621   5.693935    -0.88   0.386    -16.42501    6.459769
+           Dxxunemp0Xt |   7.448211   18.06098     0.41   0.682    -28.84668    43.74311
+          Dxxunemp0Xt2 |   -11.4522    16.1302    -0.71   0.481    -43.86705    20.96265
+          Dxxincome0Xt |   1593.737   1051.748     1.52   0.136    -519.8295    3707.304
+         Dxxincome0Xt2 |  -1485.915   876.7074    -1.69   0.096    -3247.725    275.8941
+           Dxxpover0Xt |   6.399745   6.802109     0.94   0.351    -7.269605    20.06909
+          Dxxpover0Xt2 |  -4.221265   6.496656    -0.65   0.519    -17.27678    8.834254
+          Dxxafdc150Xt |   1.559783   1.592131     0.98   0.332    -1.639724     4.75929
+         Dxxafdc150Xt2 |  -2.034083   1.396616    -1.46   0.152    -4.840689    .7725224
+          Dxxgunlaw0Xt |          0  (omitted)
+         Dxxgunlaw0Xt2 |          0  (omitted)
+            Dxxbeer0Xt |   13.44985   16.57973     0.81   0.421    -19.86837    46.76807
+           Dxxbeer0Xt2 |  -14.64844   14.99054    -0.98   0.333    -44.77306    15.47618
+          xxprison02Xt |   -.409615   .8174898    -0.50   0.619    -2.052422    1.233192
+         xxprison02Xt2 |   .2872258    .708484     0.41   0.687    -1.136526    1.710978
+          xxpolice02Xt |   9.043788   6.831462     1.32   0.192    -4.684549    22.77212
+         xxpolice02Xt2 |  -10.31824   6.598924    -1.56   0.124    -23.57928    2.942789
+           xxunemp02Xt |  -668.1156   375.8641    -1.78   0.082    -1423.443    87.21167
+          xxunemp02Xt2 |     606.69   348.7676     1.74   0.088    -94.18476    1307.565
+          xxincome02Xt |          0  (omitted)
+         xxincome02Xt2 |   10825.05    17189.1     0.63   0.532    -23717.75    45367.84
+           xxpover02Xt |  -69.84003   75.78305    -0.92   0.361    -222.1318     82.4517
+          xxpover02Xt2 |   80.96773   74.69709     1.08   0.284     -69.1417    231.0772
+          xxafdc1502Xt |   .3677982   2.349572     0.16   0.876    -4.353844     5.08944
+         xxafdc1502Xt2 |  -.7306903   1.997717    -0.37   0.716    -4.745252    3.283872
+          xxgunlaw02Xt |   .0547641   .6872665     0.08   0.937     -1.32635    1.435878
+         xxgunlaw02Xt2 |  -.0928113    .606025    -0.15   0.879    -1.310664    1.125042
+            xxbeer02Xt |   60.96239   74.29419     0.82   0.416    -88.33738    210.2622
+           xxbeer02Xt2 |  -60.00569   64.14888    -0.94   0.354    -188.9177    68.90632
+             _Iyear_87 |  -3.680252   2.552628    -1.44   0.156     -8.80995    1.449447
+             _Iyear_88 |  -9.070378   6.050906    -1.50   0.140    -21.23013    3.089372
+             _Iyear_89 |  -16.15577   10.60021    -1.52   0.134    -37.45769    5.146154
+             _Iyear_90 |  -24.97396   16.27096    -1.53   0.131    -57.67167    7.723761
+             _Iyear_91 |  -35.49597   23.10142    -1.54   0.131    -81.92001    10.92808
+             _Iyear_92 |    -47.809   31.08367    -1.54   0.130     -110.274    14.65598
+             _Iyear_93 |  -61.80569   40.26463    -1.53   0.131    -142.7205    19.10912
+             _Iyear_94 |  -77.50863   50.63384    -1.53   0.132    -179.2611    24.24389
+             _Iyear_95 |  -94.96202   62.20258    -1.53   0.133    -219.9628    30.03875
+             _Iyear_96 |  -114.1743   74.97299    -1.52   0.134    -264.8382    36.48953
+             _Iyear_97 |  -135.1632   88.94755    -1.52   0.135      -313.91    43.58357
+                 _cons |   29.84123   40.01933     0.75   0.459    -50.58063    110.2631
+----------------------------------------------------------------------------------------
+
+. reg Dymurd Dmurd `AllMurd' `tdums' , cluster(statenum) ;
+note: Dxxgunlaw2 omitted because of collinearity
+note: Lxxgunlaw2 omitted because of collinearity
+note: Dxxgunlaw0 omitted because of collinearity
+note: xxgunlaw02 omitted because of collinearity
+note: Dxxgunlaw2Xt omitted because of collinearity
+note: Dxxgunlaw2Xt2 omitted because of collinearity
+note: DxxincomeXDxxgunlawXt omitted because of collinearity
+note: DxxincomeXDxxgunlawXt2 omitted because of collinearity
+note: LxxgunlawXt omitted because of collinearity
+note: Lxxincome2Xt omitted because of collinearity
+note: Lxxgunlaw2Xt2 omitted because of collinearity
+note: Mxxincome2Xt omitted because of collinearity
+note: Mxxincome2Xt2 omitted because of collinearity
+note: xxgunlaw0Xt omitted because of collinearity
+note: xxgunlaw0Xt2 omitted because of collinearity
+note: Dxxgunlaw0Xt omitted because of collinearity
+note: Dxxgunlaw0Xt2 omitted because of collinearity
+note: xxincome02Xt omitted because of collinearity
+
+Linear regression                                      Number of obs =     600
+                                                       F( 49,    49) =       .
+                                                       Prob > F      =       .
+                                                       R-squared     =  0.4420
+                                                       Root MSE      =  .28055
+
+                                        (Std. Err. adjusted for 50 clusters in statenum)
+----------------------------------------------------------------------------------------
+                       |               Robust
+                Dymurd |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-----------------------+----------------------------------------------------------------
+                 Dmurd |  -1.326905   .9319656    -1.42   0.161     -3.19976      .54595
+                 murd0 |   22.84344   184.6961     0.12   0.902    -348.3172    394.0041
+               murd0Xt |  -270.0118   926.7649    -0.29   0.772    -2132.416    1592.392
+              murd0Xt2 |   322.7125   1043.038     0.31   0.758    -1773.351    2418.776
+                murd02 |    14360.4   42699.21     0.34   0.738    -71446.86    100167.7
+              murd02Xt |  -89701.66   214788.9    -0.42   0.678    -521336.2    341932.9
+             murd02Xt2 |   120461.9   228941.8     0.53   0.601    -339613.9    580537.8
+                Dmurd0 |   4.250475   119.2121     0.04   0.972    -235.3151    243.8161
+              Dmurd0Xt |   70.24624   547.6137     0.13   0.898    -1030.225    1170.717
+             Dmurd0Xt2 |  -140.3057    611.955    -0.23   0.820    -1370.075    1089.464
+               Dmurd02 |  -9498.623   26002.61    -0.37   0.716    -61752.82    42755.57
+             Dmurd02Xt |   58834.34     130567     0.45   0.654    -203549.8    321218.5
+            Dmurd02Xt2 |  -76925.06     138803    -0.55   0.582    -355860.1      202010
+             Dxxprison |  -3.172103   2.048605    -1.55   0.128    -7.288929    .9447235
+             Dxxpolice |  -3.534493   3.908116    -0.90   0.370    -11.38815    4.319161
+              Dxxunemp |   3.836305   21.28879     0.18   0.858    -38.94512    46.61772
+             Dxxincome |   231.6059   1411.794     0.16   0.870      -2605.5    3068.711
+              Dxxpover |   9.445334   7.391402     1.28   0.207    -5.408244    24.29891
+             Dxxafdc15 |  -2.935016   3.530186    -0.83   0.410    -10.02919    4.159159
+             Dxxgunlaw |   12.00776   5.776991     2.08   0.043     .3984579    23.61706
+               Dxxbeer |   32.02029   38.57802     0.83   0.411    -45.50515    109.5457
+            Dxxprison2 |  -21.62051   12.37498    -1.75   0.087    -46.48896    3.247943
+            Dxxpolice2 |   -78.8633   42.15869    -1.87   0.067    -163.5844    5.857746
+             Dxxunemp2 |  -988.4896   968.7509    -1.02   0.313    -2935.267    958.2883
+            Dxxincome2 |    -762684    1458325    -0.52   0.603     -3693298     2167930
+             Dxxpover2 |  -20.14137   131.7793    -0.15   0.879    -284.9618    244.6791
+            Dxxafdc152 |   5.170719   16.05637     0.32   0.749    -27.09577    37.43721
+            Dxxgunlaw2 |          0  (omitted)
+              Dxxbeer2 |   1164.494   1210.401     0.96   0.341    -1267.898    3596.887
+   DxxprisonXDxxpolice |   116.3447   60.30717     1.93   0.060    -4.847119    237.5365
+    DxxprisonXDxxunemp |   77.75908   240.1305     0.32   0.747    -404.8011    560.3193
+   DxxprisonXDxxincome |   8463.487   8442.323     1.00   0.321    -8501.996    25428.97
+    DxxprisonXDxxpover |  -124.7251   75.90321    -1.64   0.107    -277.2584    27.80808
+   DxxprisonXDxxafdc15 |  -18.23056   25.59704    -0.71   0.480    -69.66974    33.20862
+   DxxprisonXDxxgunlaw |  -100.0705   49.66684    -2.01   0.049    -199.8798   -.2613035
+     DxxprisonXDxxbeer |   144.5015   263.0766     0.55   0.585    -384.1708    673.1738
+    DxxpoliceXDxxunemp |   221.8244   426.9053     0.52   0.606    -636.0739    1079.723
+   DxxpoliceXDxxincome |  -10550.88   11627.58    -0.91   0.369    -33917.37    12815.61
+    DxxpoliceXDxxpover |  -232.2531   144.2517    -1.61   0.114    -522.1376    57.63147
+   DxxpoliceXDxxafdc15 |   35.21068   67.80289     0.52   0.606    -101.0443    171.4657
+   DxxpoliceXDxxgunlaw |   717.1934   298.2286     2.40   0.020     117.8806    1316.506
+     DxxpoliceXDxxbeer |   613.2753   609.0251     1.01   0.319    -610.6064    1837.157
+    DxxunempXDxxincome |  -71141.38    72388.5    -0.98   0.331    -216611.5    74328.76
+     DxxunempXDxxpover |   327.2258   553.5963     0.59   0.557    -785.2677    1439.719
+    DxxunempXDxxafdc15 |   265.5891   234.8811     1.13   0.264     -206.422    737.6003
+    DxxunempXDxxgunlaw |  -7876.209   3979.405    -1.98   0.053    -15873.12    120.7055
+      DxxunempXDxxbeer |    1992.88   2096.438     0.95   0.346     -2220.07     6205.83
+    DxxincomeXDxxpover |   7598.406   18420.88     0.41   0.682    -29419.73    44616.54
+   DxxincomeXDxxafdc15 |   5185.212   7241.621     0.72   0.477     -9367.37    19737.79
+   DxxincomeXDxxgunlaw |   23102.78   9806.878     2.36   0.023     3395.122    42810.44
+     DxxincomeXDxxbeer |  -31437.61   53498.24    -0.59   0.559    -138946.4    76071.13
+    DxxpoverXDxxafdc15 |  -84.05968   83.92757    -1.00   0.321    -252.7185    84.59909
+    DxxpoverXDxxgunlaw |  -4074.697   1793.737    -2.27   0.028    -7679.345   -470.0482
+      DxxpoverXDxxbeer |  -972.6493   715.0942    -1.36   0.180    -2409.685    464.3863
+   Dxxafdc15XDxxgunlaw |   -1741.51   873.5067    -1.99   0.052    -3496.887     13.8677
+     Dxxafdc15XDxxbeer |  -119.4907   244.8132    -0.49   0.628    -611.4611    372.4798
+     DxxgunlawXDxxbeer |   8806.962   4001.552     2.20   0.032     765.5422    16848.38
+             Lxxprison |   1.947734   1.745417     1.12   0.270    -1.559813    5.455281
+             Lxxpolice |   7.708696   11.32776     0.68   0.499    -15.05529    30.47268
+              Lxxunemp |   28.96601    40.9324     0.71   0.483    -53.29073    111.2227
+             Lxxincome |  -1179.277   7845.729    -0.15   0.881    -16945.86    14587.31
+              Lxxpover |   4.269109   15.71756     0.27   0.787    -27.31651    35.85473
+             Lxxafdc15 |  -.4419179   5.286363    -0.08   0.934    -11.06526    10.18143
+             Lxxgunlaw |  -.3795244   .4227758    -0.90   0.374    -1.229124    .4700753
+               Lxxbeer |   131.5438   55.75348     2.36   0.022     19.50303    243.5847
+            Lxxprison2 |  -1.066762   1.410201    -0.76   0.453    -3.900666    1.767142
+            Lxxpolice2 |  -2.946032   5.335432    -0.55   0.583    -13.66798     7.77592
+             Lxxunemp2 |  -64.29587   200.5168    -0.32   0.750    -467.2495    338.6578
+            Lxxincome2 |   4041.619   41885.21     0.10   0.924    -80129.86     88213.1
+             Lxxpover2 |  -32.63128    43.4362    -0.75   0.456    -119.9196    54.65703
+            Lxxafdc152 |   -.435959   2.955886    -0.15   0.883    -6.376034    5.504116
+            Lxxgunlaw2 |          0  (omitted)
+              Lxxbeer2 |  -185.7188   105.4894    -1.76   0.085    -397.7076       26.27
+             Mxxprison |   .6303246    1.43178     0.44   0.662    -2.246945    3.507594
+             Mxxpolice |   2.056847   11.19994     0.18   0.855    -20.45028    24.56397
+              Mxxunemp |  -101.2272   88.70833    -1.14   0.259    -279.4933    77.03883
+             Mxxincome |    13963.5   6426.687     2.17   0.035     1048.584    26878.41
+              Mxxpover |   2.453004   26.85247     0.09   0.928    -51.50905    56.41506
+             Mxxafdc15 |  -8.230692   6.273654    -1.31   0.196    -20.83807    4.376688
+             Mxxgunlaw |   -.127574   1.159147    -0.11   0.913    -2.456967    2.201819
+               Mxxbeer |  -16.35137   55.79852    -0.29   0.771    -128.4827    95.77996
+            Mxxprison2 |   .4602041   .6272053     0.73   0.467    -.8002122     1.72062
+            Mxxpolice2 |  -2.166972   5.182944    -0.42   0.678    -12.58249    8.248543
+             Mxxunemp2 |   887.1933   887.7538     1.00   0.323    -896.8148    2671.201
+            Mxxincome2 |  -68827.17   32019.33    -2.15   0.037    -133172.4   -4481.913
+             Mxxpover2 |  -37.80802    76.9729    -0.49   0.625    -192.4909    116.8748
+            Mxxafdc152 |   5.481838   3.066434     1.79   0.080    -.6803919    11.64407
+            Mxxgunlaw2 |   .1215808   1.538756     0.08   0.937    -2.970665    3.213827
+              Mxxbeer2 |   28.96274   103.1725     0.28   0.780    -178.3701    236.2956
+             xxprison0 |  -3.318069    1.93385    -1.72   0.093    -7.204286    .5681473
+             xxpolice0 |   -13.3072   11.94107    -1.11   0.271    -37.30369    10.68928
+              xxunemp0 |   30.40431   53.81211     0.57   0.575    -77.73516    138.5438
+             xxincome0 |  -7987.408   7888.824    -1.01   0.316    -23840.59    7865.779
+              xxpover0 |  -12.94775   27.67218    -0.47   0.642    -68.55708    42.66158
+             xxafdc150 |   5.302418   5.470146     0.97   0.337    -5.690251    16.29509
+             xxgunlaw0 |   .5897316   .8614213     0.68   0.497    -1.141359    2.320823
+               xxbeer0 |  -124.0261   73.18433    -1.69   0.096    -271.0956    23.04329
+            Dxxprison0 |  -3.028154    2.59441    -1.17   0.249    -8.241816    2.185509
+            Dxxpolice0 |  -.4565141   5.241008    -0.09   0.931    -10.98871    10.07569
+             Dxxunemp0 |  -1.543358   23.24148    -0.07   0.947    -48.24887    45.16215
+            Dxxincome0 |  -14.91906   1932.561    -0.01   0.994    -3898.546    3868.708
+             Dxxpover0 |  -1.391916   12.07345    -0.12   0.909    -25.65442    22.87059
+            Dxxafdc150 |   .2119733   3.773515     0.06   0.955    -7.371189    7.795136
+            Dxxgunlaw0 |          0  (omitted)
+              Dxxbeer0 |   -53.6297   37.32685    -1.44   0.157    -128.6408    21.38141
+            xxprison02 |   1.025326   1.389334     0.74   0.464    -1.766646    3.817298
+            xxpolice02 |   8.129632   6.531236     1.24   0.219    -4.995378    21.25464
+             xxunemp02 |  -295.1283   375.6583    -0.79   0.436    -1050.042    459.7852
+            xxincome02 |   40612.55    42916.7     0.95   0.349    -45631.78    126856.9
+             xxpover02 |   62.32456   83.58829     0.75   0.459    -105.6524    230.3015
+            xxafdc1502 |  -2.682516   3.015927    -0.89   0.378    -8.743248    3.378216
+            xxgunlaw02 |          0  (omitted)
+              xxbeer02 |   167.7818   99.08712     1.69   0.097    -31.34122    366.9048
+           DxxprisonXt |   13.17376   9.517675     1.38   0.173    -5.952727    32.30024
+          DxxprisonXt2 |  -10.29507   8.994266    -1.14   0.258    -28.36972    7.779583
+           DxxpoliceXt |   4.707567   13.70528     0.34   0.733    -22.83423    32.24937
+          DxxpoliceXt2 |  -.2704008   11.27171    -0.02   0.981    -22.92175    22.38095
+            DxxunempXt |  -97.92108     83.068    -1.18   0.244    -264.8525    69.01032
+           DxxunempXt2 |   122.2376   76.69911     1.59   0.117    -31.89507    276.3702
+           DxxincomeXt |  -2058.348    4423.92    -0.47   0.644    -10948.55    6831.853
+          DxxincomeXt2 |   914.9318   3740.851     0.24   0.808    -6602.589    8432.452
+            DxxpoverXt |  -21.63606    30.0029    -0.72   0.474    -81.92915    38.65702
+           DxxpoverXt2 |   11.06999   28.78818     0.38   0.702    -46.78202      68.922
+           Dxxafdc15Xt |   7.443121   15.36129     0.48   0.630    -23.42654    38.31278
+          Dxxafdc15Xt2 |  -6.216817   13.51341    -0.46   0.648    -33.37304     20.9394
+           DxxgunlawXt |  -186.6581   89.06147    -2.10   0.041    -365.6338   -7.682413
+          DxxgunlawXt2 |   196.9259    94.7161     2.08   0.043      6.58674     387.265
+             DxxbeerXt |  -98.77623   137.6379    -0.72   0.476      -375.37    177.8176
+            DxxbeerXt2 |   58.77553   106.3102     0.55   0.583    -154.8628    272.4139
+          Dxxprison2Xt |   87.10074   53.65051     1.62   0.111      -20.714    194.9155
+         Dxxprison2Xt2 |  -68.47397   47.82632    -1.43   0.159    -164.5846    27.63663
+          Dxxpolice2Xt |   179.2883   100.2611     1.79   0.080    -22.19393    380.7706
+         Dxxpolice2Xt2 |  -104.3698   63.18357    -1.65   0.105     -231.342    22.60232
+           Dxxunemp2Xt |   1744.779   4066.647     0.43   0.670    -6427.454    9917.011
+          Dxxunemp2Xt2 |     782.91   3912.768     0.20   0.842    -7080.092    8645.912
+          Dxxincome2Xt |   -1148259    7513993    -0.15   0.879    -1.62e+07    1.40e+07
+         Dxxincome2Xt2 |    3737730    7089467     0.53   0.600    -1.05e+07    1.80e+07
+           Dxxpover2Xt |  -40.22564   673.3465    -0.06   0.953    -1393.366    1312.915
+          Dxxpover2Xt2 |   58.70656   647.2529     0.09   0.928    -1241.997     1359.41
+          Dxxafdc152Xt |  -17.34487    68.2847    -0.25   0.801    -154.5681    119.8784
+         Dxxafdc152Xt2 |   13.95978   68.72207     0.20   0.840    -124.1424     152.062
+          Dxxgunlaw2Xt |          0  (omitted)
+         Dxxgunlaw2Xt2 |          0  (omitted)
+            Dxxbeer2Xt |  -2749.737   2793.886    -0.98   0.330    -8364.261    2864.786
+           Dxxbeer2Xt2 |   1521.254   1747.582     0.87   0.388    -1990.644    5033.152
+ DxxprisonXDxxpoliceXt |  -318.3686   228.3909    -1.39   0.170    -777.3372    140.6001
+DxxprisonXDxxpoliceXt2 |   213.5103   187.6794     1.14   0.261    -163.6455    590.6662
+  DxxprisonXDxxunempXt |  -174.7195   1117.459    -0.16   0.876    -2420.337    2070.898
+ DxxprisonXDxxunempXt2 |  -105.3135   1124.797    -0.09   0.926    -2365.677     2155.05
+ DxxprisonXDxxincomeXt |  -32188.44   51356.99    -0.63   0.534    -135394.2    71017.29
+DxxprisonXDxxincomeXt2 |   22221.03   48718.72     0.46   0.650    -75682.89      120125
+  DxxprisonXDxxpoverXt |   412.4746   331.3775     1.24   0.219    -253.4534    1078.403
+ DxxprisonXDxxpoverXt2 |  -271.0855    314.802    -0.86   0.393    -903.7038    361.5327
+ DxxprisonXDxxafdc15Xt |   136.8937   132.1801     1.04   0.305    -128.7322    402.5195
+DxxprisonXDxxafdc15Xt2 |  -152.4565   125.7432    -1.21   0.231     -405.147     100.234
+ DxxprisonXDxxgunlawXt |   2193.439   1039.904     2.11   0.040     103.6744    4283.203
+DxxprisonXDxxgunlawXt2 |  -2510.724   1193.502    -2.10   0.041    -4909.156   -112.2923
+   DxxprisonXDxxbeerXt |  -397.5206   897.4838    -0.44   0.660    -2201.082    1406.041
+  DxxprisonXDxxbeerXt2 |   390.2299   735.3407     0.53   0.598    -1087.493    1867.952
+  DxxpoliceXDxxunempXt |  -578.8618   1258.859    -0.46   0.648    -3108.633    1950.909
+ DxxpoliceXDxxunempXt2 |   347.5976   908.4537     0.38   0.704    -1478.008    2173.204
+ DxxpoliceXDxxincomeXt |   66906.23   57608.87     1.16   0.251    -48863.12    182675.6
+DxxpoliceXDxxincomeXt2 |  -63787.46   52692.91    -1.21   0.232    -169677.8    42102.91
+  DxxpoliceXDxxpoverXt |   758.8282   411.0997     1.85   0.071    -67.30761    1584.964
+ DxxpoliceXDxxpoverXt2 |  -536.1737   292.3935    -1.83   0.073     -1123.76      51.413
+ DxxpoliceXDxxafdc15Xt |  -83.21228   251.7845    -0.33   0.742    -589.1923    422.7677
+DxxpoliceXDxxafdc15Xt2 |    51.7933   209.9101     0.25   0.806    -370.0369    473.6235
+ DxxpoliceXDxxgunlawXt |  -3400.111   1441.248    -2.36   0.022    -6296.407   -503.8146
+DxxpoliceXDxxgunlawXt2 |   3042.304    1300.38     2.34   0.023      429.093    5655.515
+   DxxpoliceXDxxbeerXt |  -1713.509   2111.273    -0.81   0.421     -5956.27    2529.253
+  DxxpoliceXDxxbeerXt2 |   1314.553   1838.852     0.71   0.478    -2380.759    5009.865
+  DxxunempXDxxincomeXt |   465572.2   454014.7     1.03   0.310    -446804.6     1377949
+ DxxunempXDxxincomeXt2 |  -478799.4   450555.2    -1.06   0.293     -1384224    426625.1
+   DxxunempXDxxpoverXt |  -1492.257   2789.546    -0.53   0.595    -7098.059    4113.545
+  DxxunempXDxxpoverXt2 |   1279.062   2887.785     0.44   0.660    -4524.158    7082.283
+  DxxunempXDxxafdc15Xt |   -1719.36   1174.489    -1.46   0.150    -4079.585    640.8645
+ DxxunempXDxxafdc15Xt2 |   1742.919   1149.798     1.52   0.136    -567.6871    4053.525
+  DxxunempXDxxgunlawXt |   28564.95   14275.71     2.00   0.051    -123.1684    57253.07
+ DxxunempXDxxgunlawXt2 |  -23629.39   11634.12    -2.03   0.048    -47009.03    -249.745
+    DxxunempXDxxbeerXt |  -8237.637   7868.129    -1.05   0.300    -24049.23     7573.96
+   DxxunempXDxxbeerXt2 |   6680.345   6946.729     0.96   0.341    -7279.629    20640.32
+  DxxincomeXDxxpoverXt |  -82328.65   75280.37    -1.09   0.279    -233610.2    68952.92
+ DxxincomeXDxxpoverXt2 |   87699.16    66442.1     1.32   0.193    -45821.25    221219.6
+ DxxincomeXDxxafdc15Xt |   -27496.6   37409.09    -0.74   0.466      -102673    47679.78
+DxxincomeXDxxafdc15Xt2 |   32650.32   38700.64     0.84   0.403    -45121.53    110422.2
+ DxxincomeXDxxgunlawXt |          0  (omitted)
+DxxincomeXDxxgunlawXt2 |          0  (omitted)
+   DxxincomeXDxxbeerXt |  -18983.11     227487    -0.08   0.934    -476135.3    438169.1
+  DxxincomeXDxxbeerXt2 |    87449.2   243027.7     0.36   0.721    -400933.2    575831.6
+  DxxpoverXDxxafdc15Xt |   621.8962   483.6588     1.29   0.205    -350.0526    1593.845
+ DxxpoverXDxxafdc15Xt2 |  -632.8258   472.2222    -1.34   0.186    -1581.792    316.1403
+  DxxpoverXDxxgunlawXt |   10387.89   4410.869     2.36   0.023     1523.917    19251.86
+ DxxpoverXDxxgunlawXt2 |  -6493.508   2680.527    -2.42   0.019    -11880.23   -1106.786
+    DxxpoverXDxxbeerXt |   3553.814   2898.879     1.23   0.226    -2271.701     9379.33
+   DxxpoverXDxxbeerXt2 |  -3214.359     2721.9    -1.18   0.243    -8684.222    2255.505
+ Dxxafdc15XDxxgunlawXt |   3074.188   1669.364     1.84   0.072    -280.5247      6428.9
+Dxxafdc15XDxxgunlawXt2 |  -996.8039   680.5791    -1.46   0.149    -2364.479     370.871
+   Dxxafdc15XDxxbeerXt |   .8443517   1131.172     0.00   0.999    -2272.331     2274.02
+  Dxxafdc15XDxxbeerXt2 |   217.6199   1035.997     0.21   0.834    -1864.295    2299.535
+   DxxgunlawXDxxbeerXt |  -23031.98    10165.1    -2.27   0.028    -43459.51    -2604.46
+  DxxgunlawXDxxbeerXt2 |   14339.23   6090.625     2.35   0.023     2099.661     26578.8
+           LxxprisonXt |  -3.553222   5.407764    -0.66   0.514    -14.42053    7.314086
+          LxxprisonXt2 |   1.285448   4.779877     0.27   0.789    -8.320075    10.89097
+           LxxpoliceXt |  -50.41656   42.30741    -1.19   0.239    -135.4365    34.60337
+          LxxpoliceXt2 |    51.0141   39.10768     1.30   0.198    -27.57572    129.6039
+            LxxunempXt |  -96.61603   145.3813    -0.66   0.509    -388.7707    195.5386
+           LxxunempXt2 |  -16.68128   144.9922    -0.12   0.909     -308.054    274.6915
+           LxxincomeXt |   1827.515   2989.523     0.61   0.544    -4180.156    7835.186
+          LxxincomeXt2 |  -4654.729   16783.34    -0.28   0.783    -38382.11    29072.65
+            LxxpoverXt |  -9.198886   61.01103    -0.15   0.881    -131.8051    113.4074
+           LxxpoverXt2 |   16.01633   53.19294     0.30   0.765    -90.87888    122.9115
+           Lxxafdc15Xt |  -8.527149   23.37377    -0.36   0.717    -55.49849    38.44419
+          Lxxafdc15Xt2 |   10.97877   20.06102     0.55   0.587    -29.33535    51.29289
+           LxxgunlawXt |          0  (omitted)
+          LxxgunlawXt2 |   .0729752   1.227884     0.06   0.953    -2.394549      2.5405
+             LxxbeerXt |  -437.4694   160.5038    -2.73   0.009    -760.0139   -114.9248
+            LxxbeerXt2 |   401.9627   139.6541     2.88   0.006     121.3174     682.608
+          Lxxprison2Xt |   2.306688   2.391689     0.96   0.340     -2.49959    7.112967
+         Lxxprison2Xt2 |   -.637868   1.137758    -0.56   0.578    -2.924277    1.648541
+          Lxxpolice2Xt |   19.97143   19.76007     1.01   0.317    -19.73791    59.68077
+         Lxxpolice2Xt2 |  -20.35421   18.26884    -1.11   0.271    -57.06681     16.3584
+           Lxxunemp2Xt |   230.8592   888.7478     0.26   0.796    -1555.146    2016.865
+          Lxxunemp2Xt2 |   297.7954   1078.782     0.28   0.784    -1870.099     2465.69
+          Lxxincome2Xt |          0  (omitted)
+         Lxxincome2Xt2 |    10791.9   78112.86     0.14   0.891    -146181.8    167765.6
+           Lxxpover2Xt |   51.27381   179.5572     0.29   0.776    -309.5598    412.1074
+          Lxxpover2Xt2 |  -28.23067   159.4653    -0.18   0.860    -348.6882    292.2269
+          Lxxafdc152Xt |   6.779773   12.74486     0.53   0.597    -18.83198    32.39153
+         Lxxafdc152Xt2 |  -8.529889   10.23566    -0.83   0.409    -29.09921    12.03944
+          Lxxgunlaw2Xt |   .2607372   1.450132     0.18   0.858    -2.653413    3.174887
+         Lxxgunlaw2Xt2 |          0  (omitted)
+            Lxxbeer2Xt |   685.8647   311.5586     2.20   0.032     59.76424    1311.965
+           Lxxbeer2Xt2 |   -722.138   262.8294    -2.75   0.008    -1250.313   -193.9625
+           MxxprisonXt |  -7.703236   6.525815    -1.18   0.244    -20.81735    5.410881
+          MxxprisonXt2 |   9.122592   6.486729     1.41   0.166    -3.912977    22.15816
+           MxxpoliceXt |   37.31509   68.94989     0.54   0.591    -101.2449    175.8751
+          MxxpoliceXt2 |  -64.00765    81.2915    -0.79   0.435     -227.369    99.35374
+            MxxunempXt |   349.1375   354.9582     0.98   0.330    -364.1777    1062.453
+           MxxunempXt2 |  -60.70225   419.0492    -0.14   0.885    -902.8131    781.4086
+           MxxincomeXt |  -115.8263   2559.731    -0.05   0.964    -5259.798    5028.145
+          MxxincomeXt2 |   486.9196   2774.293     0.18   0.861     -5088.23    6062.069
+            MxxpoverXt |  -35.62876   124.0669    -0.29   0.775    -284.9505     213.693
+           MxxpoverXt2 |  -13.94803   145.7223    -0.10   0.924     -306.788     278.892
+           Mxxafdc15Xt |   50.04257   33.87495     1.48   0.146    -18.03169    118.1168
+          Mxxafdc15Xt2 |  -46.48377   28.99925    -1.60   0.115    -104.7599    11.79239
+           MxxgunlawXt |  -.1772615   5.524173    -0.03   0.975     -11.2785    10.92398
+          MxxgunlawXt2 |    1.30594   6.308332     0.21   0.837    -11.37113    13.98301
+             MxxbeerXt |   27.75156   258.6565     0.11   0.915     -492.038    547.5412
+            MxxbeerXt2 |  -65.28663   246.0971    -0.27   0.792    -559.8373     429.264
+          Mxxprison2Xt |   2.197573   3.602631     0.61   0.545    -5.042185    9.437331
+         Mxxprison2Xt2 |  -5.293574   3.946289    -1.34   0.186    -13.22394     2.63679
+          Mxxpolice2Xt |  -12.14085   32.68979    -0.37   0.712    -77.83344    53.55174
+         Mxxpolice2Xt2 |   26.20783   39.46518     0.66   0.510    -53.10043    105.5161
+           Mxxunemp2Xt |  -2292.992    3291.77    -0.70   0.489     -8908.05    4322.067
+          Mxxunemp2Xt2 |  -155.9384   3961.735    -0.04   0.969    -8117.344    7805.467
+          Mxxincome2Xt |          0  (omitted)
+         Mxxincome2Xt2 |          0  (omitted)
+           Mxxpover2Xt |   268.4782   327.4357     0.82   0.416    -389.5284    926.4848
+          Mxxpover2Xt2 |  -114.0184   368.4856    -0.31   0.758    -854.5178    626.4811
+          Mxxafdc152Xt |  -28.10737   15.39109    -1.83   0.074    -59.03691    2.822175
+         Mxxafdc152Xt2 |   25.29606   12.48489     2.03   0.048      .206737    50.38539
+          Mxxgunlaw2Xt |   2.697003   8.401039     0.32   0.750    -14.18552    19.57952
+         Mxxgunlaw2Xt2 |  -4.172545   9.172376    -0.45   0.651    -22.60513    14.26004
+            Mxxbeer2Xt |  -94.61428    456.048    -0.21   0.837    -1011.077    821.8486
+           Mxxbeer2Xt2 |   259.0983   414.0623     0.63   0.534     -572.991    1091.188
+           xxprison0Xt |   13.20706   5.926776     2.23   0.030     1.296756    25.11736
+          xxprison0Xt2 |  -11.14305   4.229024    -2.63   0.011    -19.64159   -2.644512
+           xxpolice0Xt |   31.73971   59.44147     0.53   0.596    -87.71239    151.1918
+          xxpolice0Xt2 |  -4.994826    66.0457    -0.08   0.940    -137.7186     127.729
+            xxunemp0Xt |  -158.2734   194.3758    -0.81   0.419    -548.8861    232.3394
+           xxunemp0Xt2 |   112.1553    193.783     0.58   0.565    -277.2663    501.5769
+           xxincome0Xt |  -1648.202   4228.693    -0.39   0.698    -10146.08    6849.674
+          xxincome0Xt2 |  -11060.08   14223.87    -0.78   0.441    -39644.01    17523.85
+            xxpover0Xt |    35.9879   132.4899     0.27   0.787    -230.2605    302.2363
+           xxpover0Xt2 |   6.680282   144.2943     0.05   0.963      -283.29    296.6505
+           xxafdc150Xt |  -21.39038   18.20558    -1.17   0.246    -57.97586    15.19511
+          xxafdc150Xt2 |   17.89472    14.7586     1.21   0.231     -11.7638    47.55325
+           xxgunlaw0Xt |          0  (omitted)
+          xxgunlaw0Xt2 |          0  (omitted)
+             xxbeer0Xt |   438.9682   293.9971     1.49   0.142     -151.841    1029.777
+            xxbeer0Xt2 |  -342.4677   265.3736    -1.29   0.203     -875.756    190.8206
+          Dxxprison0Xt |   8.073416   7.141581     1.13   0.264    -6.278128    22.42496
+         Dxxprison0Xt2 |  -4.315957   5.627358    -0.77   0.447    -15.62456    6.992643
+          Dxxpolice0Xt |  -12.59741   25.91654    -0.49   0.629    -64.67865    39.48383
+         Dxxpolice0Xt2 |   18.99916   26.09646     0.73   0.470    -33.44364    71.44196
+           Dxxunemp0Xt |   44.88279   101.0622     0.44   0.659    -158.2093    247.9749
+          Dxxunemp0Xt2 |  -76.05121   97.18166    -0.78   0.438    -271.3451    119.2427
+          Dxxincome0Xt |  -131.7016   6266.918    -0.02   0.983    -12725.54    12462.14
+         Dxxincome0Xt2 |   394.5378   4655.419     0.08   0.933    -8960.877    9749.953
+           Dxxpover0Xt |  -10.17459   42.15565    -0.24   0.810    -94.88954    74.54036
+          Dxxpover0Xt2 |   26.83337   38.41967     0.70   0.488    -50.37384    104.0406
+          Dxxafdc150Xt |  -1.718853   14.83727    -0.12   0.908    -31.53547    28.09776
+         Dxxafdc150Xt2 |   2.441139   12.90057     0.19   0.851    -23.48352     28.3658
+          Dxxgunlaw0Xt |          0  (omitted)
+         Dxxgunlaw0Xt2 |          0  (omitted)
+            Dxxbeer0Xt |    138.879   98.30469     1.41   0.164    -58.67164    336.4297
+           Dxxbeer0Xt2 |  -97.10611   71.77377    -1.35   0.182    -241.3409    47.12867
+          xxprison02Xt |  -5.495753   4.946629    -1.11   0.272    -15.43638     4.44487
+         xxprison02Xt2 |   6.298486   4.164448     1.51   0.137    -2.070286    14.66726
+          xxpolice02Xt |  -21.37406   32.01979    -0.67   0.508    -85.72023    42.97211
+         xxpolice02Xt2 |   6.053991   35.42218     0.17   0.865    -65.12954    77.23752
+           xxunemp02Xt |   883.0726   1311.053     0.67   0.504    -1751.588    3517.733
+          xxunemp02Xt2 |  -367.6635   1448.408    -0.25   0.801    -3278.348    2543.021
+          xxincome02Xt |          0  (omitted)
+         xxincome02Xt2 |   67327.03   66287.35     1.02   0.315    -65882.38    200536.4
+           xxpover02Xt |  -182.5307   382.1664    -0.48   0.635    -950.5228    585.4613
+          xxpover02Xt2 |   40.32216   408.7081     0.10   0.922    -781.0076    861.6519
+          xxafdc1502Xt |    10.9603   11.11619     0.99   0.329    -11.37853    33.29912
+         xxafdc1502Xt2 |  -9.627756   9.996464    -0.96   0.340     -29.7164    10.46089
+          xxgunlaw02Xt |  -2.852617   4.077032    -0.70   0.487    -11.04572    5.340485
+         xxgunlaw02Xt2 |   2.584687   3.889082     0.66   0.509    -5.230716    10.40009
+            xxbeer02Xt |  -607.8894   414.2851    -1.47   0.149    -1440.427    224.6477
+           xxbeer02Xt2 |   430.1101   380.2215     1.13   0.263    -333.9737    1194.194
+             _Iyear_87 |   13.41312   12.51435     1.07   0.289     -11.7354    38.56165
+             _Iyear_88 |    37.4656    32.6389     1.15   0.257    -28.12472    103.0559
+             _Iyear_89 |   72.02912   60.95609     1.18   0.243    -50.46673     194.525
+             _Iyear_90 |   116.9839    97.6999     1.20   0.237    -79.35143    313.3192
+             _Iyear_91 |   172.5976   142.9843     1.21   0.233    -114.7401    459.9354
+             _Iyear_92 |   238.9056   196.9804     1.21   0.231    -156.9413    634.7525
+             _Iyear_93 |    315.518    259.466     1.22   0.230    -205.8984    836.9344
+             _Iyear_94 |   402.6311   330.6924     1.22   0.229    -261.9201    1067.182
+             _Iyear_95 |   500.4812   410.6833     1.22   0.229    -324.8178     1325.78
+             _Iyear_96 |   608.7879   499.2308     1.22   0.229    -394.4538     1612.03
+             _Iyear_97 |   727.7968   596.4844     1.22   0.228    -470.8835    1926.477
+                 _cons |  -230.2039   244.7733    -0.94   0.352    -722.0943    261.6864
+----------------------------------------------------------------------------------------
+
+. * Note that Stata and MATLAB results differ presumably due to how Stata
+> * implicitly regularizes the inverse involved in OLS ;
+. * Variable selection ;
+. * Violence Outcome ;
+. lassoShooting Dyviol `AllViol' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local yvSel `r(selected)' ;
+
+. di "`yvSel'" ;
+
+
+. * Violence Abortion ;
+. lassoShooting Dviol `AllViol' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local xvSel `r(selected)' ;
+
+. di "`xvSel'" ;
+viol0 Lxxprison Lxxpolice Mxxincome Dxxincome0 LxxpoliceXt MxxincomeXt Dxxincome0Xt Dxxbeer0Xt
+
+. * Get union of selected instruments ;
+. local vDS : list yvSel | xvSel ;
+
+. * Violence equation with selected controls ;
+. reg Dyviol Dviol `vDS' `tdums' , cluster(statenum) ;
+
+Linear regression                                      Number of obs =     600
+                                                       F( 21,    49) =   31.19
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2712
+                                                       Root MSE      =   .0713
+
+                              (Std. Err. adjusted for 50 clusters in statenum)
+------------------------------------------------------------------------------
+             |               Robust
+      Dyviol |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       Dviol |  -.1711086   .1169667    -1.46   0.150    -.4061621    .0639448
+       viol0 |   .0802067   .1059545     0.76   0.453    -.1327168    .2931302
+   Lxxprison |   .0098219    .008758     1.12   0.268     -.007778    .0274218
+   Lxxpolice |  -.0207962    .042971    -0.48   0.631    -.1071497    .0655573
+   Mxxincome |   5.818115   6.795879     0.86   0.396    -7.838716    19.47495
+  Dxxincome0 |  -22.96238   39.82136    -0.58   0.567    -102.9864    57.06164
+ LxxpoliceXt |  -.0475144   .0577602    -0.82   0.415    -.1635879    .0685592
+ MxxincomeXt |  -6.052352   9.589547    -0.63   0.531    -25.32327    13.21856
+Dxxincome0Xt |    21.1692   62.79434     0.34   0.737    -105.0207    147.3591
+  Dxxbeer0Xt |    1.27701   .5919436     2.16   0.036     .0874547    2.466565
+   _Iyear_87 |  -.0267729   .0831013    -0.32   0.749    -.1937713    .1402254
+   _Iyear_88 |   .0916363   .1567621     0.58   0.562    -.2233889    .4066614
+   _Iyear_89 |   .1464188   .2359991     0.62   0.538    -.3278392    .6206768
+   _Iyear_90 |   .2561356   .3142027     0.82   0.419    -.3752784    .8875496
+   _Iyear_91 |   .2631317   .3850493     0.68   0.498    -.5106538    1.036917
+   _Iyear_92 |   .2963447   .4669551     0.63   0.529    -.6420367    1.234726
+   _Iyear_93 |   .3427014   .5426416     0.63   0.531    -.7477777     1.43318
+   _Iyear_94 |   .3720111   .6199318     0.60   0.551    -.8737884    1.617811
+   _Iyear_95 |   .4305513     .69629     0.62   0.539    -.9686958    1.829798
+   _Iyear_96 |   .4361002   .7742085     0.56   0.576     -1.11973     1.99193
+   _Iyear_97 |   .5344996    .848951     0.63   0.532    -1.171531     2.24053
+       _cons |  -.4479965   .5859512    -0.76   0.448     -1.62551    .7295165
+------------------------------------------------------------------------------
+
+. * Property Outcome ;
+. lassoShooting Dyprop `AllProp' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local ypSel `r(selected)' ;
+
+. di "`ypSel'" ;
+Mxxincome2Xt2 xxincome02Xt2
+
+. * Property Abortion ;
+. lassoShooting Dprop `AllProp' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local xpSel `r(selected)' ;
+
+. di "`xpSel'" ;
+prop0 Lxxprison Lxxpolice Lxxincome Mxxincome Dxxincome0 Dxxincome0Xt
+
+. * Get union of selected instruments ;
+. local pDS : list ypSel | xpSel ;
+
+. * Property equation with selected controls ;
+. reg Dyprop Dprop `pDS' `tdums' , cluster(statenum) ;
+
+Linear regression                                      Number of obs =     600
+                                                       F( 21,    49) =   32.90
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.2635
+                                                       Root MSE      =  .04613
+
+                               (Std. Err. adjusted for 50 clusters in statenum)
+-------------------------------------------------------------------------------
+              |               Robust
+       Dyprop |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+--------------+----------------------------------------------------------------
+        Dprop |   -.061102   .0574657    -1.06   0.293    -.1765836    .0543796
+Mxxincome2Xt2 |  -22.11494   63.89211    -0.35   0.731    -150.5109    106.2811
+xxincome02Xt2 |   .7059215    56.3296     0.01   0.990    -112.4926    113.9045
+        prop0 |  -.0124397   .0195727    -0.64   0.528    -.0517725    .0268932
+    Lxxprison |   .0121946   .0040504     3.01   0.004      .004055    .0203343
+    Lxxpolice |  -.0140263    .009529    -1.47   0.147    -.0331755    .0051229
+    Lxxincome |   36.26951   8.323394     4.36   0.000     19.54302    52.99599
+    Mxxincome |  -37.98595   8.709538    -4.36   0.000    -55.48842   -20.48348
+   Dxxincome0 |   48.66539   22.37093     2.18   0.034     3.709325    93.62145
+ Dxxincome0Xt |  -61.55598   46.04741    -1.34   0.187    -154.0917    30.97975
+    _Iyear_87 |  -.0240758   .0098472    -2.44   0.018    -.0438645   -.0042871
+    _Iyear_88 |  -.0368411   .0155514    -2.37   0.022    -.0680928   -.0055893
+    _Iyear_89 |  -.0177839    .023584    -0.75   0.454    -.0651777    .0296099
+    _Iyear_90 |  -.0074649   .0360274    -0.21   0.837    -.0798648    .0649349
+    _Iyear_91 |   .0113907   .0500294     0.23   0.821    -.0891472    .1119285
+    _Iyear_92 |   -.019033   .0703714    -0.27   0.788    -.1604496    .1223837
+    _Iyear_93 |   .0072728   .0904647     0.08   0.936    -.1745228    .1890684
+    _Iyear_94 |   .0594942   .1152943     0.52   0.608    -.1721985    .2911868
+    _Iyear_95 |   .0893587   .1448813     0.62   0.540    -.2017912    .3805086
+    _Iyear_96 |   .0621685    .175651     0.35   0.725    -.2908155    .4151525
+    _Iyear_97 |    .099528   .2096789     0.47   0.637    -.3218375    .5208935
+        _cons |   .2438847   .2144054     1.14   0.261    -.1869792    .6747485
+-------------------------------------------------------------------------------
+
+. * Murder Outcome ;
+. lassoShooting Dymurd `AllMurd' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local ymSel `r(selected)' ;
+
+. di "`ymSel'" ;
+
+
+. * Murder Abortion ;
+. lassoShooting Dmurd `AllMurd' , controls(`tdums') lasiter(100) verbose(0) fdisplay(0) ;
+
+. local xmSel `r(selected)' ;
+
+. di "`xmSel'" ;
+murd0 murd0Xt Lxxprison LxxprisonXt LxxpoliceXt MxxincomeXt Dxxincome0Xt
+
+. * Get union of selected instruments ;
+. local mDS : list ymSel | xmSel ;
+
+. * Property equation with selected controls ;
+. reg Dymurd Dmurd `mDS' `tdums' , cluster(statenum) ;
+
+Linear regression                                      Number of obs =     600
+                                                       F( 19,    49) =    7.39
+                                                       Prob > F      =  0.0000
+                                                       R-squared     =  0.0514
+                                                       Root MSE      =  .25999
+
+                              (Std. Err. adjusted for 50 clusters in statenum)
+------------------------------------------------------------------------------
+             |               Robust
+      Dymurd |      Coef.   Std. Err.      t    P>|t|     [95% Conf. Interval]
+-------------+----------------------------------------------------------------
+       Dmurd |  -.1887577   .1771051    -1.07   0.292    -.5446636    .1671482
+       murd0 |   2.653454   1.199515     2.21   0.032     .2429375     5.06397
+     murd0Xt |  -3.879823   2.258935    -1.72   0.092    -8.419323     .659677
+   Lxxprison |   .0027667   .0264763     0.10   0.917    -.0504393    .0559728
+ LxxprisonXt |   .0121999   .0460045     0.27   0.792    -.0802496    .1046494
+ LxxpoliceXt |  -.0695053   .0463527    -1.50   0.140    -.1626545    .0236439
+ MxxincomeXt |   1.028492    6.40857     0.16   0.873    -11.85001      13.907
+Dxxincome0Xt |  -16.43935   35.11261    -0.47   0.642    -87.00079    54.12209
+   _Iyear_87 |  -.0947747   .0887733    -1.07   0.291    -.2731713     .083622
+   _Iyear_88 |  -.0706572   .1139397    -0.62   0.538    -.2996275    .1583131
+   _Iyear_89 |  -.0689368   .1846248    -0.37   0.710    -.4399542    .3020806
+   _Iyear_90 |  -.0199243   .2183068    -0.09   0.928    -.4586282    .4187797
+   _Iyear_91 |  -.0399224   .2777195    -0.14   0.886    -.5980206    .5181759
+   _Iyear_92 |  -.0956867    .324214    -0.30   0.769    -.7472192    .5558458
+   _Iyear_93 |    .022048   .3747672     0.06   0.953    -.7310749    .7751709
+   _Iyear_94 |  -.1746816   .4420652    -0.40   0.694    -1.063045    .7136816
+   _Iyear_95 |  -.0439523   .4763081    -0.09   0.927    -1.001129    .9132247
+   _Iyear_96 |  -.1236051   .5453497    -0.23   0.822    -1.219526    .9723162
+   _Iyear_97 |  -.1466523   .5914332    -0.25   0.805    -1.335182    1.041877
+       _cons |   .0516893   .0556674     0.93   0.358    -.0601786    .1635572
+------------------------------------------------------------------------------
+
+. log close ;
+      name:  <unnamed>
+       log:  C:\Users\chansen1\Dropbox\JEPHighDimInf (1)\Examples\Stata\Abortion\JEPAbortion.txt
+  log type:  text
+ closed on:  10 Mar 2014, 12:51:53
+----------------------------------------------------------------------------------------------------

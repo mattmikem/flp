@@ -1,0 +1,79 @@
+--------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  C:\Users\chansen1\Dropbox\JEPHighDimInf (1)\Examples\Stata\Institut
+> ions\JEPInstitutions.txt
+  log type:  text
+ opened on:   9 May 2014, 11:02:11
+
+. insheet using acemoglu_col_notext.txt ;
+(9 vars, 64 obs)
+
+. gen lnmort = log(mort) ;
+
+. gen lat2 = latitude^2 ;
+
+. gen lat3 = latitude^3 ;
+
+. gen lat_c08 = (latitude - .08)*(latitude - .08 > 0) ;
+
+. gen lat2_c08 = ((latitude - .08)*(latitude - .08 > 0))^2 ;
+
+. gen lat3_c08 = ((latitude - .08)*(latitude - .08 > 0))^3 ;
+
+. gen lat_c16 = (latitude - .16)*(latitude - .16 > 0) ;
+
+. gen lat2_c16 = ((latitude - .16)*(latitude - .16 > 0))^2 ;
+
+. gen lat3_c16 = ((latitude - .16)*(latitude - .16 > 0))^3 ;
+
+. gen lat_c24 = (latitude - .24)*(latitude - .24 > 0) ;
+
+. gen lat2_c24 = ((latitude - .24)*(latitude - .24 > 0))^2 ;
+
+. gen lat3_c24 = ((latitude - .24)*(latitude - .24 > 0))^3 ;
+
+. local controls = "africa asia namer samer latitude lat2 lat3 
+>         lat_c08 lat2_c08 lat3_c08 lat_c16 lat2_c16 lat3_c16 
+>         lat_c24 lat2_c24 lat3_c24" ;
+
+. * Baseline with just latitude ;
+. ivreg gdp (exprop = lnmort) latitude , robust first ;
+
+First-stage regressions
+-----------------------
+op. sys. refuses to provide memory
+r(909);
+
+end of do-file
+
+r(909);
+
+. update query
+(contacting http://www.stata.com)
+
+Update status
+    Last check for updates:  09 May 2014
+    New update available:    none         (as of 09 May 2014)
+    Current update level:    06 May 2014  (what's new)
+
+Possible actions
+
+    Do nothing; all files are up to date.
+
+. cd c:\temp
+c:\temp
+
+. use Conleyetal2012
+no; data in memory would be lost
+r(4);
+
+. clear
+
+. use Conleyetal2012
+(Conely et al's (2012) REStat for 401(k) participation)
+
+. reg tfa e401
+op. sys. refuses to provide memory
+r(909);
+
+. exit, clear
