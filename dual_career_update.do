@@ -15,7 +15,7 @@ set more off
 
 global flp = "L:\Research\Resurgence\IPUMS"
 *Output folder set for 3/28 presentation
-global out = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Presentations"
+global out = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Draft"
 
 **Household Composition and Central City (education, employment status, by geotype)
 
@@ -137,9 +137,9 @@ gen nc_maemnch    = nchild - mar_emp_nchild
 gen marnc_maemnch = mar_nchild - mar_emp_nchild
 gen empnc_maemnch = emp_nchild - mar_emp_nchild
 
-label var marry "(1) Single vs. Married"
-label var emp   "(2) Lone vs. Dual-Earner"
-label var mar_emp_nchild "(3) No Children vs. Children"
+label var marry "(1) Married vs. Single"
+label var emp   "(2) Dual-Earner vs. Lone-Earner"
+label var mar_emp_nchild "(3) Children vs. No Children"
 
 forvalues y = 1980(10)2010 {
 *reg central_city emp marry nc_maemnch mar_emp mar_nchild emp_nchild mar_emp_nchild bach_plus age linc if year == `y', r
@@ -306,6 +306,17 @@ gen ehnc_maehch = emp_high_nchild - mar_emph_nchild
 
 label var mar_emph_nchild "(3) No Children vs. Children"
 
+xtset metarea
+
+eststo: xtreg central_city emp marry nc_maemnch mar_minempmar marnc_maemnch empnc_maemnch mar_emp_nchild bach_plus age linc i.year, fe vce(robust)
+*These rename statements are reset below and for output alignment purposes!
+rename emp e
+rename mar_emp_nchild mec
+rename emp_high emp
+rename mar_emph_nchild mar_emp_nchild
+eststo: xtreg central_city emp marry nch_maemch mar_mehmar manc_maehch ehnc_maehch mar_emp_nchild bach_plus age linc i.year, fe vce(robust)
+
+/*
 forvalues y = 1980(10)2010 {
 *reg central_city emp_high marry nchild mar_emp_high mar_nchild emp_high_nchild mar_emph_nchild bach_plus age linc if year == `y', r
 *reg central_city emp_high marry nchild mar_emp_high mar_nchild emp_high_nchild mar_emph_nchild bach_plus age linc if year == `y', r
@@ -321,15 +332,16 @@ eststo: areg central_city emp_high marry nch_maemch mar_mehmar manc_maehch ehnc_
 *eststo: areg central_city emp_high marry nchild mar_mehmar mar_minchd emp_high_nchild mar_emph_nchild bach_plus age linc if year == `y', r absorb(metarea)
 
 }
-
+*/
 #delimit ;
-esttab using "$out\reg_eh.tex", replace label r2
-mtitles("1980 (OLS)" "1980 (FE)" "1990 (OLS)" "1990 (FE)" "2000 (OLS)" "2000 (FE)" "2010 (OLS)" "2010 (FE)") 
-title("Probality of Living in Central City - High Employment Case")
-order(marry emp_high mar_emph_nchild) keep(marry emp_high mar_emph_nchild)
+esttab using "$out\reg_sro.tex", replace label r2
+mtitles("General Employment" "High Prestige Employment") 
+title("Difference in Probality of Living in Central City")
+order(marry emp mar_emp_nchild) keep(marry emp mar_emp_nchild)
 addnote("High Prestige employment based on occupation in highest quartile of Siegel career prestige scale."
 "Regressions include interactions of employment, marital status and number of children, in addition to"
-"educational attainment, age, and income measures.")
+"educational attainment, age, and income measures."
+"Specifications also include metropolitan area and year fixed effects, with cluster-robust standard error.")
  ;
 #delimit cr
 
@@ -485,14 +497,21 @@ gen female = 0
 replace female = 1 if sex == 2
 
 gen recs_age = rec_sin*age
+
+xtset metarea
+
+keep if year > 2007 & year < 2012
+keep if migtype1 == 3 
  
-eststo: reg city_sub rec_marr $x trend if migtype1 == 3 & year > 2007 & year < 2012 & female == 1
-eststo: reg sub_city rec_sin $x trend if  migtype1 == 4 & year > 2007 & year < 2012 & nchild == 0  & female == 1
+eststo: xtreg city_sub rec_marr $x trend if migtype1 == 3 & year > 2007 & year < 2012 & female == 1 & nchild == 0, fe vce(robust)
+eststo: xtreg city_sub rec_marr $x trend if migtype1 == 3 & year > 2007 & year < 2012 & female == 1 & nchild != 0, fe vce(robust)
+
+*eststo: reg sub_city rec_sin $x trend if  migtype1 == 4 & year > 2007 & year < 2012 & nchild == 0  & female == 1
 *eststo: reg sub_city rec_sin recs_age $x female trend if (migtype1 == 1 | migtype1 == 4)  & year > 2007 & year < 2012 & nchild == 0
 *eststo: reg sub_city rec_div $x trend if (migtype1 == 1 | migtype1 == 4)  & year > 2007 & year < 2012 & nchild == 0
 *eststo: reg sub_city rec_wid $x trend if (migtype1 == 1 | migtype1 == 4)  & year > 2007 & year < 2012 & nchild == 0
-eststo: reg city_sub rec_ch  $x trend if  migtype1 == 3  & year > 2007 & year < 2012 & female == 1
-eststo: reg city_sub rec_unemp $x trend if migtype1 == 3 & year > 2007 & year < 2012 & female == 1
+*eststo: reg city_sub rec_ch  $x trend if  migtype1 == 3  & year > 2007 & year < 2012 & female == 1
+*eststo: reg city_sub rec_unemp $x trend if migtype1 == 3 & year > 2007 & year < 2012 & female == 1
 
 *eststo: areg city_sub rec_marr $x female trend if migtype1 == 3 & year > 2007 & year < 2012, absorb(year)
 *eststo: areg sub_city rec_sin recs_age $x female trend if (migtype1 == 1 | migtype1 == 4)  & year > 2007 & year < 2012 & nchild == 0, absorb(year)
@@ -502,9 +521,12 @@ eststo: reg city_sub rec_unemp $x trend if migtype1 == 3 & year > 2007 & year < 
 *eststo: areg city_sub rec_unemp $x female trend if migtype1 == 3 & year > 2007 & year < 2012, absorb(year)
 
 #delimit ;
-esttab using "$out\reg_changes.tex", replace title("Migration in Response to Family Strucure and Employment Changes")
-order(rec_marr rec_sin rec_ch rec_unemp) keep(rec_marr rec_sin rec_ch rec_unemp)
-note("Additional controls include employment, income, education, and age." "Single within last year includes divorce and death of spouse.") 
+esttab using "$out\reg_changes.tex", replace title("City-Suburban Migration and Recent Marriage")
+order(rec_marr) keep(rec_marr)
+mlabel("No Children" "Children")
+addnote("Sample limited to women between 18 and 65 who, in previous year, lived in central city."
+"Includes years 2008-2011."
+"Additional controls include employment, income, education, and age." "Includes metropolitan area and year fixed effects, cluster-robust standard errors.") 
 label r2;
 #delimit cr
 clear matrix
