@@ -17,57 +17,60 @@ global reg  = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\D
 global trct = "L:\Research\Resurgence\Working Files\Shapefiles DTA\"
 global out  = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Draft"
 
+
+/*
 use ipums_withcbsa, clear
 
-
-
-*keep metarea group
+keep cbsa group
 *keep metarea group year
 
-*duplicates drop
+duplicates drop
 
 *joinby group using gwg_wide, unmatched(master)
-joinby group year using gwg_lasso_long_alts, unmatched(master)
+*joinby group year using gwg_lasso_long_alts, unmatched(master)
 
-rename delta gwg
+*rename delta gwg
 
-drop _merge
+*drop _merge
 
-drop if metarea == .
+*drop if metarea == .
 
-tostring metarea, gen(cbsa)
-replace cbsa = "31100" if cbsa == "31080"
+*tostring metarea, gen(cbsa)
+*replace cbsa = "31100" if cbsa == "31080"
 
-gen gwg_late      = gwg
+*gen gwg_late      = gwg
 *gen se_late       = se
-gen sing_pct_late = sing_pct
-gen fem_pct_late  = fem_pct    
-gen a_eta_late = a_eta
-gen b_eta_late = b_eta
+*gen sing_pct_late = sing_pct
+*gen fem_pct_late  = fem_pct    
+*gen a_eta_late = a_eta
+*gen b_eta_late = b_eta
 
-decode metarea, gen(metarea_str)
-gen state = substr(metarea_str, strpos(metarea_str, ",")+2, 2)
+*decode metarea, gen(metarea_str)
+*gen state = substr(metarea_str, strpos(metarea_str, ",")+2, 2)
 
-save gwg_lasso_forncdb, replace
-
+*save gwg_lasso_forncdb, replace
+save cbsa_group, replace
+*/
 **NCDB, add on GWG
 
 *use "$work\resurge_12_10.dta", clear
-use "$work\resurge_06_16.dta", clear
+use "$work\resurge_09_16.dta", clear
 
-*tab _merge
-drop _merge
-
-keep geo2010 zcta5 region division cbsa ua_code ua_name distance cc_2 cc_1 central_city incp* rtp* shrmin* nonfam* mf_rat* pt_walk* own_* mbed3_* mbed4pl_* munit5pl_* hu_age30pl_* marshr* 
+keep geo2010 zcta5 region division cbsa ua_code ua_name distance cc_2 cc_1 central_city pop* educ_b* incp* rtp* shrmin* nonfam* mf_rat* pt_walk* own_* mbed3_* mbed4pl_* munit5pl_* hu_age30pl_* marshr* 
 
 drop if ua_code == .
 
 reshape clear
 reshape i geo2010 zcta5 division cbsa ua_code ua_name distance cc_2 cc_1 central_city
 reshape j year
-reshape xij incp rtp shrmin nonfam mf_rat marshr pt_walk own_ mbed3_ mbed4pl_ munit5pl_ hu_age30pl_
+reshape xij incp rtp educ_b shrmin nonfam mf_rat marshr pt_walk own_ mbed3_ mbed4pl_ munit5pl_ hu_age30pl_ pop
 reshape long
 
+joinby cbsa using cbsa_group, unmatched(master)
+drop _merge
+joinby group year using gwg_lasso_long_alts, unmatched(master)
+drop _merge
+/*
 joinby cbsa using msa1990_cbsa, unmatched(master)
 drop _merge
 joinby metarea year using gwg_lasso_forncdb, unmatched(master)
@@ -81,6 +84,7 @@ replace sing_pct = sing_pct_late if year > 1990
 replace fem_pct  = fem_pct_late  if year > 1990
 replace a_eta    = a_eta_late    if year > 1990
 replace b_eta    = b_eta_late    if year > 1990
+*/
 
 joinby ua_code cbsa using top_cbsa, unmatched(master)
 
@@ -120,10 +124,41 @@ name(sing_dist, replace)
 legend(order(1 "1980 - Single" 2 "2010 - Single" 3 "1980 - Married" 4 "2010 - Married"))
 graphregion(color(white)) bgcolor(white)
 	   ;
+	   
+twoway (lpoly educ_b distance if year == 1970 & distance < 20) 
+       (lpoly educ_b distance if year == 1980 & distance < 20)
+	   (lpoly educ_b distance if year == 1990 & distance < 20)
+	   (lpoly educ_b distance if year == 2000 & distance < 20)
+	   (lpoly educ_b distance if year == 2010 & distance < 20),
+	  
+xtitle("Distance to City Center")
+ytitle("Pct of HHs")
+title("Perc Bach + and Distance to City Center")
+name(ed_dist, replace)
+legend(order(1 "1970" 2 "1980" 3 "1990" 4 "2000" 5 "2010"))
+graphregion(color(white)) bgcolor(white);	   
+
+twoway (lpoly incp distance if year == 1970 & distance < 15) 
+       (lpoly incp distance if year == 1980 & distance < 15)
+	   (lpoly incp distance if year == 1990 & distance < 15)
+	   (lpoly incp distance if year == 2000 & distance < 15)
+	   (lpoly incp distance if year == 2010 & distance < 15),
+	  
+xtitle("Distance to City Center")
+ytitle("Inc Perc")
+title("Income Percentile and Distance to City Center")
+name(incp_dist, replace)
+legend(order(1 "1970" 2 "1980" 3 "1990" 4 "2000" 5 "2010"))
+graphregion(color(white)) bgcolor(white);	   
+	   
 #delimit cr
 
 graph export "$out\sing_dist.png", replace name(sing_dist)
 graph export "$out\sing_dist.pdf", replace name(sing_dist)
+graph export "$out\incp_dist.png", replace name(incp_dist)
+graph export "$out\incp_dist.pdf", replace name(incp_dist)
+graph export "$out\ed_dist.png", replace name(ed_dist)
+graph export "$out\ed_dist.pdf", replace name(ed_dist)
 
 #delimit ;
 twoway 	   (lpolyci mf_rat distance if year == 1980 & distance < 10 & ua_code < 20, lcolor(red) lpattern(solid))
@@ -135,7 +170,7 @@ twoway 	   (lpolyci mf_rat distance if year == 1980 & distance < 10 & ua_code < 
 bysort geo2010 year: gen count = _N
 drop if count > 1
 
-*smart_w geo2010 flp_set contiguity row
+smart_w geo2010 flp_set contiguity row
 
 capture spmat use flp_set using flp_set.spmat
  
@@ -169,6 +204,9 @@ egen w_lincp = rowtotal(w_lincp*)
 *replace gwg = -1*gwg
 
 **Interactions
+
+rename delta gwg
+replace a_eta = 1 - a_eta
 
 gen dist_gwg     = gwg*distance
 gen cc_gwg       = cc_2*gwg
@@ -257,7 +295,7 @@ label var d_gwg          "$\Delta$ Gender Wage Gap (est)"
 label var cc_dgwg       "$\Delta GWG$ $\times$ City Center"
 label var cen_city_dgwg "$\Delta GWG$ $\times$ Central City"
 label var dist_dgwg     "$\Delta GWG$ $\times$ Distance"
-label var l_gwg         "$Lag Gender Wage Gap (est)"
+label var l_gwg         "$Lag Gender Wage Gap (lag)"
 label var cc_lgwg       "GWG (lag) $\times$ City Center"
 label var cen_city_lgwg "GWG (lag) $\times$ Central City"
 label var dist_lgwg     "GWG (lag) $\times$ Distance"
@@ -285,13 +323,53 @@ destring cbsa, gen(cbsa_num)
 xtset cbsa_num
 
 save with_w, replace
-xx
-eststo: xtreg incp distance l_gwg  dist_lgwg l_incp w_incp $l_xi i.year if eta > -1 & eta < 2, fe vce(robust)
-eststo: xtreg incp cc_2 l_gwg  cc_lgwg l_eta cc_l_eta l_incp w_incp $l_xi i.year, fe vce(robust)
-eststo: xtreg incp central_city l_gwg  cen_city_lgwg eta cen_city_eta l_incp w_incp $l_xi i.year, fe vce(robust)
+
+label var la_eta       "Gender Wage Kink (lag)"
+label var dist_la_eta  "GWK (lag) $\times$ Distance"
+label var cc_la_eta  "GWK (lag) $\times$ City Center"
+label var cen_city_la_eta  "GWK (lag) $\times$ Central City"
+
+
+local i = 0
+
+foreach l in "distance dist_lgwg dist_la_eta" "cc_2 cc_lgwg cc_la_eta" "central_city cen_city_lgwg cen_city_la_eta" {
+
+clear matrix
+
+local i = `i' + 1
+
+eststo: xtreg incp l_gwg  la_eta `l' w_incp $l_xi i.year , fe vce(robust)
 
 #delimit ;
-esttab using "$out\gwg_l_reg.tex", replace label r2
+esttab using "$out\gwg_l_reg_`i'.tex", replace label r2
+title("Neighborhood Income Percentile and Gender Wage Gap Components\label{tab:gent`i'}")
+order(l_gwg la_eta `l')
+keep(l_gwg la_eta `l')
+star(+ .1 * 0.05 ** 0.01 *** 0.001)
+addn("Gender wage gap and kink estimated by LASSO procedure for each metro area in each year."
+"All specifications include metropolitan area and year fixed effects."
+"Cluster-robust standard errors by metro area." 
+"Additional controls include specifics on minority share, mode of commuting, number of bedrooms,"
+"units per structure, and age of housing stock."
+"Estimates account for neighborhood-level spillovers in income." 
+"Distance is measured from centroid of city center.");
+#delimit cr
+
+#delimit ;
+esttab using "$out\gwg_l_reg_`i'_p.tex", replace label r2
+title("Neighborhood Income Percentile and Gender Wage Gap Components\label{tab:gent`i'}")
+order(l_gwg la_eta `l')
+keep(l_gwg la_eta `l')
+star(+ .1 * 0.05 ** 0.01 *** 0.001);
+#delimit cr
+*/
+}
+/*
+eststo: xtreg incp cc_2 l_gwg  cc_lgwg la_eta cc_la_eta l_incp w_incp $l_xi i.year, fe vce(robust)
+eststo: xtreg incp central_city l_gwg  cen_city_lgwg la_eta cen_city_la_eta l_incp w_incp $l_xi i.year, fe vce(robust)
+
+#delimit ;
+esttab using "$out\gwg_l_reg_up.tex", replace label r2
 title("Changes in Income Percentile - GWG")
 order(distance dist_lgwg l_gwg cc_2 cc_lgwg central_city cen_city_lgwg l_incp w_incp $l_xi)
 keep(distance dist_lgwg l_gwg cc_2 cc_lgwg central_city cen_city_lgwg l_incp w_incp $l_xi)
@@ -302,8 +380,8 @@ addn("GWG estimated by lasso procedure for each metro area in each year."
 "units per structure, and age of housing stock." 
 "Distance is measured from centroid of city center.");
 #delimit cr
-
-xtreg incp distance l_gwg  dist_lgwg  l_incp w_incp $l_xi i.year, fe vce(robust)
+*/
+xtreg incp distance l_gwg la_eta dist_lgwg dist_la_eta l_incp w_incp $l_xi i.year, fe vce(robust)
 
 gen dots_x = .
 
@@ -332,9 +410,7 @@ local _bil = _b[dist_lgwg]-2*sqrt(V[3,3])
 local _biu = _b[dist_lgwg]+2*sqrt(V[3,3])
 
 #delimit ;
-twoway (function y = _b[distance]+_b[dist_lgwg]*x, range(gwg) lcolor(blue))
-(function y = `_bdu' + `_bil'*x, range(gwg) lcolor(blue) lpattern(dash))
-(function y = `_bdl' + `_biu'*x, range(gwg) lcolor(blue) lpattern(dash))
+twoway (function y = _b[distance]+_b[dist_lgwg]*x+_b[dist_la_eta]*0.4, range(gwg) lcolor(blue))
 (scatter dots_y gwg, mlabel(dots_l) yline(0)),
 xtitle("GWG")
 ytitle("Distance Effect")
@@ -344,10 +420,12 @@ note("Points are located at mean GWG for indicated year.")
 graphregion(color(white)) bgcolor(white);
 #delimit cr
 
-graph export "$out\dist_eff.png", replace name(dist_eff)
+graph export "$out\dist_eff_eta.png", replace name(dist_eff)
 
 clear matrix
 
+*(function y = `_bdu' + `_bil'*x, range(gwg) lcolor(blue) lpattern(dash))
+(function y = `_bdl' + `_biu'*x, range(gwg) lcolor(blue) lpattern(dash))
 
 
 *Single Percentage

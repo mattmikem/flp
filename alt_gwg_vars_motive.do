@@ -38,6 +38,7 @@ rename female fem_pct
 save fhp, replace
 
 restore 
+preserve
 
 keep if female == 1
 keep if educ > 7
@@ -51,7 +52,21 @@ rename single sing_pct
 
 save sp, replace
 
-use "$db_work\gwg_lasso_slope.dta", clear
+restore 
+
+collapse (mean) incwage, by(group year female)
+
+reshape clear
+reshape i group year
+reshape j female
+reshape xij incwage
+reshape wide
+
+gen ov_gwg = (incwage0 - incwage1)/incwage0
+
+xx
+
+*use gwg_lasso_long, clear
 *use gwg_lasso_long, clear
 
 joinby group year using sp, unmatched(master)
@@ -59,9 +74,9 @@ drop _merge
 joinby group year using fhp, unmatched(master)
 drop _merge
 
-drop if delta == .
+drop if gwg == .
 
 bysort group: gen group_n = _N
 
-save gwg_lasso_long_alts, replace
+save gwg_lasso_long_alts_mot, replace
 

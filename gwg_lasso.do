@@ -18,6 +18,8 @@ global work = "L:\Research\Resurgence\Working Files"
 global flp  = "L:\Research\Resurgence\IPUMS"
 global link = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Programs"
 
+do "$link\lassoShooting.ado"
+
 *use "$flp\ipums16_flp_22_65.dta", clear
 use "$flp\ipums22_flps_18_65.dta", clear
 
@@ -63,6 +65,11 @@ replace female = 1 if sex == 2
 
 gen agesq = age*age
 
+**Marital Status
+
+gen emarry = 0
+replace emarry = 1 if marst < 6
+
 *Removed for data completeness reasons: agemarr
 *Removed for geographic concerns: sizepl
 
@@ -77,6 +84,9 @@ replace uhrswork = 44.5  if hrswork2 == 6 & year == 1970
 replace uhrswork = 54    if hrswork2 == 7 & year == 1970
 replace uhrswork = 60    if hrswork2 == 8 & year == 1970
 
+
+
+
 *bpl_* degfield_* uhrswork*
 
 egen group = group(metarea)
@@ -89,14 +99,23 @@ set matsize 1000
 
 set more off
 
-
 **Standard Mincer Regressions
 
-mat res = J($J, 10, .) 
+mat res       = J($J, 10, .) 
+mat res_delta = J($J, 10, .)
+mat res_eta   = J($J, 10, .)
 
 do "$link\var_in_j.do"
 
 sort metarea, stable
+
+/*
+foreach vo of varlist occx_* {
+foreach vi of varlist indx_* {
+gen oi_`vo'_`vi' = `vo'*`vi'
+}
+}
+*/
 
 foreach v of varlist occx_* indx_* {
 by metarea: egen mean_`v' = mean(`v')
@@ -107,8 +126,12 @@ global x_lasso = "educy exp exp2 uhrswork  race_*
                   hisp_* occx_* indx_* mean_occx_* mean_indx_*";
 #delimit cr
 
+*oi_*
+
 **Variables excluded due to inconsistent inclusion: deg_field, met_stat
 
+gen fm = female*emarry
+xx
 save temp, replace
 
 forvalues j = 1/$J {
@@ -130,8 +153,11 @@ keep if year == `y' & group == `j'
 quietly lassoShooting lwage $x_lasso, lasiter(100) verbose(0) fdisplay(0)
 local ysel `r(selected)'
 quietly lassoShooting female $x_lasso, lasiter(100) verbose(0) fdisplay(0)
-local xse; `r(selected)'
+local xsel `r(selected)'
+quietly lassoShooting emarry $x_lasso, lasiter(100) verbose(0) fdisplay(0)
+local msel `r(selected)' 
 local xysel : list xsel | ysel
+local mysel : list xysel | msel
 
 quietly reg lwage female `xysel', r
 
@@ -140,6 +166,17 @@ mat V   = e(V)
 mat res[`j', $yy]   = est[1,1]
 global yy = $yy + 1
 mat res[`j', $yy] = sqrt(V[1,1])
+
+quietly reg lwage female emarry fm `mysel', r
+
+global yy = $yy - 1
+mat est = e(b)
+mat V   = e(V)
+mat res_delta[`j', $yy] = _b[female]
+mat res_eta[`j', $yy]   = _b[fm]
+global yy = $yy + 1
+mat res_delta[`j', $yy] = _se[female]
+mat res_eta[`j', $yy]   = _se[fm]
 
 *quietly oaxaca lwage educy age agesq if year == `y' & group == `j', by(female) pooled
 *mat est = e(b)
@@ -162,10 +199,12 @@ use temp, clear
 }
 
 svmat res
+svmat res_delta
+svmat res_eta
 
-save ipums_gwg_lasso, replace
+*save ipums_gwg_lasso, replace
 
-use ipums_gwg_lasso, clear
+*use ipums_gwg_lasso, clear
 
 keep res* group
 
@@ -188,19 +227,45 @@ rename res8  se2000
 rename res9  gwg2010
 rename res10 se2010
 
+rename res_delta1  gwg_delta1970
+rename res_delta2  se_delta1970
+rename res_delta3  gwg_delta1980
+rename res_delta4  se_delta1980
+rename res_delta5  gwg_delta1990
+rename res_delta6  se_delta1990
+rename res_delta7  gwg_delta2000
+rename res_delta8  se_delta2000
+rename res_delta9  gwg_delta2010
+rename res_delta10 se_delta2010
+
+rename res_eta1  gwg_eta1970
+rename res_eta2  se_eta1970
+rename res_eta3  gwg_eta1980
+rename res_eta4  se_eta1980
+rename res_eta5  gwg_eta1990
+rename res_eta6  se_eta1990
+rename res_eta7  gwg_eta2000
+rename res_eta8  se_eta2000
+rename res_eta9  gwg_eta2010
+rename res_eta10 se_eta2010
+
+
 rename group_id group
 
 keep if group <= $J
 
-save gwg_lasso_wide, replace
+*save gwg_lass_wide, split
+save gwg_lasso_wsplit, replace
 
 reshape clear
 reshape i group
 reshape j year
-reshape xij gwg se
+reshape xij gwg se gwg_delta se_delta gwg_eta se_eta
 reshape long
 
-save gwg_lasso_long, replace
+**With just full gap, gwg_lass_long
+*save gwg_lasso_long, replace
+save gwg_lasso_split, replace
 
 
 

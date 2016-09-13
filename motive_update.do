@@ -16,89 +16,45 @@ global work = "L:\Research\Resurgence\Working Files"
 global reg  = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Data\Regulations\BPEAzip1\FiftyYears_Replication1"
 global out  = "C:\Users\mmiller\Dropbox\Research\Urban\Papers\Delayed Marriage\Draft"
 
-use ipums_gwg_lasso, clear
+use "$work\resurge_09_16.dta", clear
 
-*keep metarea group
-keep metarea group year
-
-duplicates drop
-
-*joinby group using gwg_wide, unmatched(master)
-joinby group year using gwg_lasso_long_alts, unmatched(master)
-
-*rename delta gwg
-
-drop _merge
-
-drop if metarea == .
-
-tostring metarea, gen(cbsa)
-replace cbsa = "31100" if cbsa == "31080"
-
-gen gwg_late = gwg
-gen se_late  = se
-gen sing_pct_late = sing_pct
-gen fem_pct_late  = fem_pct  
-
-decode metarea, gen(metarea_str)
-gen state = substr(metarea_str, strpos(metarea_str, ",")+2, 2)
-
-save gwg_lasso_forncdb, replace
-
-#delimit ;
-
-kdensity gwg if year == 1980, 
-addplot(kdensity gwg if year == 1990 || 
-		kdensity gwg if year == 2000 || 
-		kdensity gwg if year == 2010) 
-legend(order(1 "1980" 2 "1990" 3 "2000" 4 "2010") c(2) r(2))
-graphregion(color(white)) bgcolor(white)
-title("Gender Wage Gap")
-xtitle("GWG (women w.r.t men)")
-name(gwg_dens, replace);
-#delimit cr 
-
-**NCDB, add on GWG
-
-use "$work\resurge_12_10.dta", clear
-
-*tab _merge
-drop _merge
-
-keep geo2010 cbsa ua_code ua_name distance cc_2 cc_1 central_city pop* incp* rtp* shrmin* pt_walk* own_* mbed3_* mbed4pl_* munit5pl_* hu_age30pl_* marshr* 
+keep geo2010 zcta5 region division cbsa ua_code ua_name distance cc_2 cc_1 central_city pop* educ_b* incp* rtp* shrmin* nonfam* mf_rat* pt_walk* own_* mbed3_* mbed4pl_* munit5pl_* hu_age30pl_* marshr* 
 
 drop if ua_code == .
 
 reshape clear
-reshape i geo2010 cbsa ua_code ua_name distance cc_2 cc_1 central_city
+reshape i geo2010 zcta5 division cbsa ua_code ua_name distance cc_2 cc_1 central_city
 reshape j year
-reshape xij incp rtp shrmin pt_walk own_ mbed3_ mbed4pl_ munit5pl_ hu_age30pl_ marshr pop
+reshape xij incp rtp educ_b shrmin nonfam mf_rat marshr pt_walk own_ mbed3_ mbed4pl_ munit5pl_ hu_age30pl_ pop
 reshape long
 
-joinby cbsa using msa1990_cbsa, unmatched(master)
+joinby cbsa using cbsa_group, unmatched(master)
 drop _merge
-joinby metarea year using gwg_lasso_forncdb, unmatched(master)
-drop _merge 
-drop *_late
-joinby cbsa year using  gwg_lasso_forncdb, unmatched(master)
+joinby group year using gwg_lasso_long_alts_mot, unmatched(master)
 drop _merge
-replace gwg = gwg_late if year > 1990
-replace se  = se_late  if year > 1990
-replace sing_pct = sing_pct_late if year > 1990
-replace fem_pct  = fem_pct_late  if year > 1990
 
 joinby ua_code cbsa using top_cbsa, unmatched(master)
 
 drop if _merge == 1
+drop _merge
 
-destring geo2010, gen(trct_num)
+destring geo2010, replace
 
-bysort trct_num year: gen count = _N
+joinby geo2010 using "$trct\tracts_id.dta", unmatched(master)
+
+drop _merge
+
+*destring geo2010, gen(trct_num)
+
+bysort geo2010 year: gen count = _N
 drop if count > 1
 
-xtset trct_num year, delta(10) 
+xtset geo2010 year, delta(10) 
 
 **Lag clean for output
+
+gen gwg = ov_gwg
+drop ov_
 
 gen d_incp       = D.incp
 gen d_rtp        = D.rtp
@@ -119,7 +75,7 @@ collapse (sum) pop (mean) incp d_incp rtp d_rtp gwg sing_pct fem_pct [w=pop], by
 gen ua_name = "US"
 
 append using by_ua
-xx
+
 **FIGURES
 
 label var incp "Mean Income Percentile (pop weighted)" 
@@ -166,12 +122,12 @@ graphregion(color(white)) bgcolor(white);
 #delimit cr 
 
 *graph export "$out\us_trend_gwgsing.png", replace name(us_trend_gwg)
-graph export "$out\us_trend_gwg.png", replace name(us_trend_gwg)
-graph export "$out\us_trend_sing.png", replace name(us_trend_sing)
-graph export "$out\us_dtrend_sing.png", replace name(us_dtrend_sing)
-graph export "$out\us_trend_gwg.pdf", replace name(us_trend_gwg)
-graph export "$out\us_trend_sing.pdf", replace name(us_trend_sing)
-graph export "$out\us_trend_fem.png", replace name(us_trend_fem)
+*graph export "$out\us_trend_gwg.png", replace name(us_trend_gwg)
+*graph export "$out\us_trend_sing.png", replace name(us_trend_sing)
+*graph export "$out\us_dtrend_sing.png", replace name(us_dtrend_sing)
+*graph export "$out\us_trend_gwg.pdf", replace name(us_trend_gwg)
+*graph export "$out\us_trend_sing.pdf", replace name(us_trend_sing)
+*graph export "$out\us_trend_fem.png", replace name(us_trend_fem)
 
 *title("Gentrification and Pct Single among College Ed Women") 
 
@@ -259,6 +215,7 @@ subtitle("Los Angeles, CA and Houston, TX")
 graphregion(color(white)) bgcolor(white);
 #delimit cr
 
+/*
 graph export "$out\trend_city_c_gwg.png", replace name(trend_city_c_gwg)
 graph export "$out\trend_city_c_sing.png", replace name(trend_city_c_sing)
 graph export "$out\trend_city_c_fem.png", replace name(trend_city_c_fem)
@@ -272,7 +229,7 @@ graph export "$out\trend_city_c_fem.pdf", replace name(trend_city_c_fem)
 graph export "$out\trend_city_dc_gwg.pdf", replace name(trend_city_dc_gwg)
 graph export "$out\trend_city_dc_sing.pdf", replace name(trend_city_dc_sing)
 graph export "$out\trend_city_dc_fem.pdf", replace name(trend_city_dc_fem)
-
+*/
 gen ua_name_g = ""
 replace ua_name_g = ua_name if ua_code < 15
 
@@ -317,7 +274,7 @@ note("Labelled by code of population rank, e.g. 0 is NY, 1 is LA, 2 is Chicago."
 graphregion(color(white)) bgcolor(white);
 #delimit cr
 */
-
+/*
 graph export "$out\sing_incp.png", replace name(sing_incp)
 graph export "$out\gwg_incp.png", replace name(gwg_incp)
 graph export "$out\fem_incp.png", replace name(fem_incp)
@@ -325,7 +282,7 @@ graph export "$out\fem_incp.png", replace name(fem_incp)
 graph export "$out\sing_incp.pdf", replace name(sing_incp)
 graph export "$out\gwg_incp.pdf", replace name(gwg_incp)
 graph export "$out\fem_incp.pdf", replace name(fem_incp)
-
+*/
 
 /*
 **By change in Income Percentile

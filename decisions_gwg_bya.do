@@ -9,7 +9,7 @@ cd "L:\Research\Resurgence\Working Files"
 clear
 clear matrix
 
-set matsize 5000
+set matsize 11000
 set more off
 
 global data = "L:\Research\Resurgence\GIS\Working Files\Output\Test"
@@ -81,63 +81,158 @@ replace rec_ch = 0 if fertyr == 1
 global f_gwg = "gwg"
 global x     = "exp lwage hhincome"
 
-local c = 0
+*local c = 0
 
+**NOTE: the code in comments runs regressions by age group, takes 24+ hours to run!
+
+/*
 local a_y = 18
 local a_o = 35
 
-local rows = `a_o' - `a_y' + 1
+*local rows = `a_o' - `a_y' + 1
+
+*mat R = J(`rows',4,.)
 
 forvalues y = 1980(10)2010 {
 
-sum group if year == `y'
-
-
-}
-
-mat R = J(`rows',4,.)
-
-forvalues a = `a_y'/`a_o' {
-
-timer list
-timer clear
-local c = `c' + 1
-timer on 1
-disp `a'
-
-forvalues y = 1980(10)2010 {
+foreach v of varlist marry bach_plus {
 
 quietly sum group if year == `y'
 local m = r(max)
 
-preserve
+disp `y'
+disp "`v'"
 
-foreach v of varlist marry bach_plus {
+forvalues a = `a_y'/`a_o' {
 
-quietly reg `v' $x i.group if year == `y'
-mat b = e(b)
-mat b_`v'_`y' = b'
+*local c = `c' + 1
+timer on `a'
 
-gen mu_`v'_`y' = .
+quietly reg `v' $x i.group if year == `y' & age == `a'
+*mat b = e(b)
+*mat b_`v'_`y' = b'
+
+*gen mu_`v'_`y' = .
 
 forvalues g = 2/`m' {
 local gg = "`g'" + ".group"
-capture replace mu_`v'_`y' = _b["`gg'"] if group == `g' & year == `y'
+*capture replace mu_`v'_`y' = _b["`gg'"] if group == `g' & year == `y'
+ 
+capture matlist R`v'`y'
+if _rc == 111 {
+mat R`v'`y' = J(1,4,.)
+mat R`v'`y'[1,1] = `y'
+mat R`v'`y'[1,2] = `g'
+mat R`v'`y'[1,3] = `a'
+capture mat R`v'`y'[1,4] = _b["`gg'"]
+}
+
+else {
+mat r`v'`y' = J(1,4,.)
+mat r`v'`y'[1,1] = `y'
+mat r`v'`y'[1,2] = `g'
+mat r`v'`y'[1,3] = `a'
+capture mat r`v'`y'[1,4] = _b["`gg'"]
+mat R`v'`y' = R`v'`y'\r`v'`y'
+}
+
+
+}
+
+timer off `a'
+timer list
+timer clear
+
 }
 
 }
 
 }
 
-gen gryr = year*10000 + group
-bysort gryr: gen N = _N
+mat Rmarry     = Rmarry1980
+mat Rbach_plus = Rbach_plus1980
 
-keep group year N mu_*
+forvalues y = 1980(10)2010 {
+mata: Rm`y' = st_matrix("Rmarry`y'")
+mata: Rb`y' = st_matrix("Rbach_plus`y'")
+}
+
+mata: Rm = Rm1980\Rm1990\Rm2000\Rm2010
+mata: Rb = Rb1980\Rb1990\Rb2000\Rb2010
+
+getmata (yrm gpm agm mum)=Rm, force
+getmata (yrb gpb agb mub)=Rb, force
+
+keep marry__* bach_plus__*
+
+duplicates drop
+
+save mu_bya, replace 
+*/
+
+**Uses mu_bya 
+
+xx
+
+bysort year group age: gen N = _N
+
+keep group year age N
 
 duplicates drop
 
 joinby group year using gwg_lasso_long
 
+save yg_n_gwg, replace
+
+use mu_mb, clear
+
+preserve
+
+rename yr year
+rename gp group
+rename ag age
+rename mu mu
+
+keep year - mu
+
+gen source = "marry"
+
+save mu_mar, replace
+
+restore
+
+drop yr - mu
+
+rename yrb year
+rename gpb group
+rename agb age
+rename mub  mu
+
+gen source = "bach_plus"
+
+append using mu_mar
+
+joinby year group age using yg_n_gwg
+
+capture drop R* ci_*
+
+cut_reg_eq age mu "gwg i.year" gwg "marry"
+cut_reg_eq age mu "gwg i.year" gwg "bach_plus"
+
+#delimit ;
+twoway (line R1marry ci_lmarry ci_umarry R3, yaxis(1) lcolor(blue blue blue) lpattern(solid dash dash) mcolor(blue blue blue))
+	   (line R1bach_plus ci_lbach_plus ci_ubach_plus R3, yaxis(2) lcolor(green green green) lpattern(solid dash dash) mcolor(green green green)),
+name(gwg_ef, replace)
+title("Marriage and Education Responses to GWG")
+subtitle("By Age")
+xtitle("Age")
+ytitle("GWG Effect")
+legend(off)
+graphregion(color(white)) bgcolor(white);
+#delimit cr
+
+xx
+/*
 save gwg_mu, replace
 
 foreach v in mu_marry mu_bach_plus {
@@ -157,7 +252,7 @@ mat R[`c', 3] = _b[gwg]
 mat V = e(V)
 mat R[`c', 4] = sqrt(V[1,1])
 
-restore
+
 timer off 1
 
 }
